@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="覚書">
+<title>覚書</title>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;background:#c84800;}
+body{font-family:'Hiragino Mincho ProN','Yu Mincho','ヒラギノ明朝 ProN','serif';overscroll-behavior:none;}
+
+/* ═══════════════════════════════
+   OPENING (DQ風そのまま)
+═══════════════════════════════ */
+#opening{
+  position:fixed;inset:0;background:#c84800;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:env(safe-area-inset-top,0px) 24px 40px;
+  text-align:center;z-index:100;transition:opacity .6s;
+}
+.stars{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.star{position:absolute;border-radius:50%;background:#ffffff;animation:twinkle var(--d,3s) ease-in-out infinite var(--dl,0s);}
+@keyframes twinkle{0%,100%{opacity:.15;transform:scale(1)}50%{opacity:1;transform:scale(1.5)}}
+.op-logo-wrap{position:relative;margin-bottom:8px;opacity:0;animation:fadeUp .4s .1s forwards;}
+.op-logo{font-family:'DotGothic16',monospace;font-size:20px;color:#ffffff;letter-spacing:3px;text-shadow:0 0 20px #ff9900aa,0 2px 0 #7a3000;}
+.op-logo-line{height:2px;background:#ffffff88;margin-top:6px;}
+.op-sub{font-family:'DotGothic16',monospace;font-size:10px;color:#ffe0b0;letter-spacing:2px;margin-bottom:28px;opacity:0;animation:fadeUp .4s .22s forwards;}
+.op-hero{margin-bottom:24px;opacity:0;animation:fadeUp .4s .36s forwards;}
+.sprite{display:grid;gap:0;image-rendering:pixelated;animation:heroFloat 2.2s ease-in-out infinite .8s;}
+.sprite div{width:10px;height:10px;}
+.px-s{background:#f5c518;}.px-f{background:#e8a060;}.px-h{background:#281420;}
+.px-b{background:#ff6600;}.px-w{background:#d8d8d8;}.px-0{background:transparent;}
+.op-btn-wrap{opacity:0;animation:fadeUp .4s .5s forwards;}
+.op-btn{
+  font-family:'DotGothic16',monospace;
+  background:#a03800;border:2px solid #ffffff;color:#ffffff;
+  font-size:13px;padding:14px 36px;cursor:pointer;letter-spacing:3px;
+  -webkit-appearance:none;border-radius:0;transition:background .15s;
+}
+.op-btn::before{content:'▶ ';animation:arrowBlink .8s step-end infinite;}
+@keyframes arrowBlink{0%,100%{opacity:1}50%{opacity:0}}
+.op-btn:active{background:#803000;transform:scale(.96);}
+
+/* ═══════════════════════════════
+   MAIN APP — おしゃれ・漢字UI
+═══════════════════════════════ */
+#main-app{display:none;position:fixed;inset:0;background:#e8e6e2;flex-direction:column;overflow:hidden;}
+#main-app.show{display:flex;}
+
+/* グレー石畳 */
+.stone-pat{
+  position:absolute;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(#d8d6d2 1px,transparent 1px),linear-gradient(90deg,#d8d6d2 1px,transparent 1px);
+  background-size:20px 20px;opacity:.5;
+}
+
+/* ヘッダー */
+.app-header{
+  background:#2c2c2c;border-bottom:1px solid #1a1a1a;
+  padding:14px 20px;padding-top:calc(14px + env(safe-area-inset-top,0px));
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;z-index:2;flex-shrink:0;
+}
+.app-header-title{
+  font-size:22px;font-weight:400;color:#f0e8d0;
+  letter-spacing:6px;
+}
+.app-header-date{font-size:11px;color:#ccc;letter-spacing:1px;text-align:right;line-height:1.6;}
+
+/* タブバー */
+.tab-bar{
+  display:flex;background:#3a3a3a;border-bottom:1px solid #222;
+  position:relative;z-index:2;flex-shrink:0;
+}
+.tab-btn{
+  flex:1;padding:11px 4px;
+  font-family:'Hiragino Mincho ProN','Yu Mincho','serif';
+  font-size:13px;color:#bbb;background:transparent;border:none;cursor:pointer;
+  letter-spacing:2px;transition:color .15s,background .15s,border-bottom .15s;
+  -webkit-appearance:none;border-bottom:2px solid transparent;
+}
+.tab-btn.active{color:#f0e8d0;border-bottom:2px solid #c8a860;}
+
+/* スクロール */
+.app-body{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:16px 16px;
+  padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));
+  position:relative;z-index:1;
+}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* カード */
+.card{
+  background:#f4f2ee;border:1px solid #ccc;border-radius:4px;
+  overflow:hidden;margin-bottom:14px;
+  box-shadow:0 2px 4px rgba(0,0,0,.08);
+}
+.card-head{
+  background:#2c2c2c;padding:10px 14px;
+  font-size:12px;color:#e8c878;letter-spacing:3px;
+  border-bottom:1px solid #1a1a1a;
+  display:flex;align-items:center;gap:8px;
+}
+.card-head-line{width:3px;height:14px;background:#c8a860;border-radius:1px;flex-shrink:0;}
+.card-body{padding:8px 12px;}
+
+/* カテゴリチップ（追加フォーム用） */
+.cat-grid{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
+.cat-chip{
+  border:1px solid currentColor;border-radius:20px;
+  font-family:'Hiragino Mincho ProN','Yu Mincho','serif';font-size:11px;
+  padding:4px 9px;cursor:pointer;background:transparent;
+  opacity:.35;transition:opacity .15s,background .15s;
+  -webkit-appearance:none;letter-spacing:0px;
+}
+.cat-chip.sel{opacity:1;background:currentColor;}
+.cat-chip.sel span{color:#f4f2ee !important;}
+.cat-chip span{color:inherit;}
+
+/* インプット */
+.field-row{display:flex;gap:6px;margin-bottom:4px;}
+.field-in{
+  flex:1;background:#fff;border:1px solid #ccc;border-radius:3px;
+  color:#222;
+  font-family:'Hiragino Mincho ProN','Yu Mincho','serif';
+  font-size:17px;padding:13px 12px;outline:none;-webkit-appearance:none;
+  transition:border-color .2s;
+}
+.field-in:focus{border-color:#888;}
+.field-in::placeholder{color:#999;font-size:13px;}
+.field-date{
+  background:#fff;border:1px solid #ccc;border-radius:3px;
+  color:#222;
+  font-family:'Hiragino Mincho ProN','Yu Mincho','serif';
+  font-size:16px;padding:12px 8px;outline:none;flex:1;-webkit-appearance:none;
+  transition:border-color .2s;
+}
+.field-date:focus{border-color:#888;}
+.field-time{
+  background:#fff;border:1px solid #ccc;border-radius:3px;
+  color:#222;font-family:'Hiragino Mincho ProN','Yu Mincho','serif';
+  font-size:16px;padding:12px 8px;outline:none;flex:1;-webkit-appearance:none;
+  transition:border-color .2s;
+}
+.field-time:focus{border-color:#888;}
+.dt-toggle-row{
+  display:flex;align-items:center;gap:10px;
+  margin-top:4px;cursor:pointer;-webkit-user-select:none;user-select:none;
+}
+.dt-checkbox{
+  width:22px;height:22px;border:2px solid #bbb;border-radius:4px;
+  background:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:14px;color:#2c2c2c;transition:all .15s;
+}
+.dt-checkbox.on{background:#2c2c2c;border-color:#2c2c2c;color:#f0e8d0;}
+.dt-checkbox.on::after{content:'✓';}
+.dt-toggle-label{font-size:15px;color:#333;letter-spacing:1px;}
+.dt-fields{display:none;}
+.dt-fields.show{display:block;}
+
+/* ボタン */
+.btn-primary{
+  background:#2c2c2c;border:1px solid #2c2c2c;color:#f0e8d0;
+  font-family:'Hiragino Mincho ProN','Yu Mincho','serif';
+  font-size:13px;padding:11px 18px;border-radius:3px;cursor:pointer;
+  letter-spacing:2px;-webkit-appearance:none;flex-shrink:0;
+  transition:background .12s;
+}
+.btn-primary:active{background:#444;transform:scale(.97);}
+.btn-outline{
+  display:block;width:100%;
+  background:transparent;border:1px solid #666;color:#222;
+  font-family:'Hiragino Mincho ProN','Yu Mincho','serif';
+  font-size:13px;padding:13px;border-radius:3px;cursor:pointer;
+  letter-spacing:2px;margin-bottom:10px;text-align:center;
+  -webkit-appearance:none;transition:all .12s;
+}
+.btn-outline:active{background:#ddd;transform:scale(.98);}
+.btn-danger{
+  display:block;width:100%;
+  background:transparent;border:1px solid #c44;color:#c44;
+  font-family:'Hiragino Mincho ProN','Yu Mincho','serif';
+  font-size:13px;padding:13px;border-radius:3px;cursor:pointer;
+  letter-spacing:2px;margin-bottom:10px;text-align:center;
+  -webkit-appearance:none;transition:all .12s;
+}
+.btn-danger:active{background:#fee;transform:scale(.98);}
+
+/* フィルター */
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.filter-pill{
+  background:transparent;border:1px solid #bbb;color:#888;
+  font-family:'Hiragino Mincho ProN','Yu Mincho','serif';
+  font-size:11px;padding:3px 9px;border-radius:20px;cursor:pointer;
+  -webkit-appearance:none;transition:all .12s;letter-spacing:0px;
+}
+.filter-pill.on{border-color:#333;color:#333;background:#dddad4;}
+.filter-pill.done-on{border-color:#2979d4;color:#2979d4;background:#ddeeff;}
+.filter-pill.todo-on{border-color:#d4820a;color:#d4820a;background:#fff0d8;}
+.filter-pill:active{transform:scale(.93);}
+
+/* 覚書カード */
+.memo-list{display:flex;flex-direction:column;gap:8px;}
+.memo-card{
+  background:#fff;border:1px solid #ddd;border-radius:4px;
+  padding:12px 14px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06);transition:opacity .2s;
+}
+.memo-card.done{opacity:.3;background:#f0eeea;}
+.memo-card.over{border-left:3px solid #c44;border-color:#dbb;}
+
+.memo-top-row{display:flex;align-items:center;gap:8px;}
+.memo-check{
+  width:22px;height:22px;border:1px solid #ccc;border-radius:50%;
+  background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:12px;flex-shrink:0;transition:all .15s;
+}
+.memo-check.ck{background:#2c2c2c;border-color:#2c2c2c;color:#f0e8d0;}
+.memo-badge{
+  font-size:12px;padding:3px 10px;border-radius:20px;
+  flex-shrink:0;letter-spacing:1px;cursor:pointer;
+  font-family:'Hiragino Mincho ProN','Yu Mincho','serif';
+  white-space:nowrap;
+}
+.memo-text{font-size:16px;line-height:1.4;color:#111;letter-spacing:.5px;flex:1;min-width:0;}
+.memo-card.done .memo-text{text-decoration:line-through;color:#888;}
+.memo-del-top{
+  background:transparent;border:none;color:#ccc;
+  font-size:20px;cursor:pointer;padding:0 2px;flex-shrink:0;
+  transition:color .12s;-webkit-appearance:none;
+  font-family:'Hiragino Mincho ProN','Yu Mincho','serif';
+  line-height:1;
+}
+.memo-del-top:active{color:#c44;}
+.memo-date-row{padding-left:30px;margin-top:4px;}
+.memo-date{font-size:15px;color:#222;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.memo-date.over{color:#c44;}
+
+
+/* 統計 */
+.stats-row{
+  display:flex;gap:0;border:1px solid #ddd;border-radius:4px;overflow:hidden;margin-top:5px;background:#fff;
+}
+.stat-cell{flex:1;padding:4px 4px;text-align:center;border-right:1px solid #ddd;}
+.stat-cell:last-child{border-right:none;}
+.stat-val{font-size:18px;color:#111;font-weight:300;}
+.stat-lbl{font-size:10px;color:#555;margin-top:0px;letter-spacing:1px;}
+
+.empty-msg{text-align:center;color:#666;font-size:13px;padding:32px 0;line-height:2.6;letter-spacing:2px;}
+
+/* ═══ カテゴリ編集 ═══ */
+.cat-edit-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.cat-edit-row{
+  background:#fff;border:1px solid #ddd;border-radius:4px;
+  padding:12px 14px;display:flex;align-items:center;gap:10px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+}
+.cat-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;}
+.cat-edit-name{flex:1;font-size:14px;color:#222;letter-spacing:1px;}
+.cat-count{font-size:11px;color:#555;flex-shrink:0;letter-spacing:1px;}
+.cat-edit-btn{
+  background:transparent;border:1px solid #aaa;color:#333;
+  font-family:'Hiragino Mincho ProN','Yu Mincho','serif';
+  font-size:11px;padding:4px 10px;border-radius:3px;cursor:pointer;
+  -webkit-appearance:none;letter-spacing:1px;transition:all .12s;flex-shrink:0;
+}
+.cat-edit-btn:active{background:#eee;}
+
+.new-cat-row{display:flex;gap:8px;align-items:center;}
+.color-swatch{
+  width:44px;height:44px;border:1px solid #ccc;border-radius:3px;
+  background:transparent;cursor:pointer;padding:0;-webkit-appearance:none;flex-shrink:0;
+}
+.hint{font-size:11px;color:#666;margin-top:8px;line-height:1.8;letter-spacing:.5px;}
+
+/* ═══ バックアップ ═══ */
+.bak-textarea{
+  width:100%;background:#fff;border:1px solid #ccc;border-radius:3px;
+  color:#222;font-family:monospace;font-size:10px;
+  padding:10px;outline:none;resize:none;height:120px;
+  -webkit-appearance:none;transition:border-color .2s;
+}
+.bak-textarea:focus{border-color:#888;}
+.bak-note{font-size:11px;color:#555;line-height:1.9;margin-top:8px;letter-spacing:.5px;}
+.bak-label{font-size:11px;color:#444;letter-spacing:2px;margin-bottom:6px;display:block;}
+
+/* ═══ ダイアログ ═══ */
+.overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.5);align-items:flex-end;justify-content:center;padding:0;}
+.overlay.show{display:flex;}
+.sheet{
+  background:#f4f2ee;border-radius:12px 12px 0 0;border-top:1px solid #ddd;
+  width:100%;max-width:500px;
+  padding:0 0 calc(24px + env(safe-area-inset-bottom,0px));
+  animation:sheetUp .25s ease-out;
+  max-height:80vh;overflow-y:auto;
+}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-handle{width:36px;height:4px;background:#ccc;border-radius:2px;margin:12px auto 16px;}
+.sheet-title{font-size:16px;color:#222;letter-spacing:3px;text-align:center;margin-bottom:18px;padding:0 20px;}
+.sheet-body{padding:0 20px;}
+.sheet-btns{display:flex;flex-direction:column;gap:8px;padding:0 20px;margin-top:14px;}
+.sheet-btn{
+  display:block;width:100%;background:#fff;border:1px solid #ddd;color:#222;
+  font-family:'Hiragino Mincho ProN','Yu Mincho','serif';
+  font-size:14px;padding:15px;border-radius:4px;cursor:pointer;
+  letter-spacing:2px;text-align:center;-webkit-appearance:none;transition:background .12s;
+}
+.sheet-btn:active{background:#eee;}
+.sheet-btn.danger{color:#c44;border-color:#e8bbbb;}
+.sheet-btn.danger:active{background:#fee;}
+.sheet-btn.selected{border-color:#2c2c2c;color:#2c2c2c;background:#e8e6e2;}
+.sheet-divider{height:1px;background:#eee;margin:8px 20px;}
+
+/* カテゴリ変更シート */
+.cat-choice{
+  display:flex;align-items:center;gap:12px;
+  background:#fff;border:1px solid #ddd;border-radius:4px;
+  padding:13px 14px;cursor:pointer;-webkit-appearance:none;
+  font-family:'Hiragino Mincho ProN','Yu Mincho','serif';
+  font-size:14px;color:#222;width:100%;text-align:left;
+  transition:background .12s;letter-spacing:1px;margin-bottom:8px;
+}
+.cat-choice:active{background:#eee;}
+.cat-choice.cur{border-color:#2c2c2c;}
+.cat-choice-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+
+/* 編集フォーム（シート内） */
+.form-group{margin-bottom:14px;}
+.form-label{font-size:11px;color:#444;letter-spacing:2px;margin-bottom:6px;display:block;}
+.form-in{
+  width:100%;background:#fff;border:1px solid #ccc;border-radius:3px;
+  color:#222;font-family:'Hiragino Mincho ProN','Yu Mincho','serif';
+  font-size:17px;padding:13px 12px;outline:none;-webkit-appearance:none;
+  transition:border-color .2s;
+}
+.form-in:focus{border-color:#888;}
+.color-preview-row{display:flex;align-items:center;gap:10px;}
+.color-preview{width:30px;height:30px;border-radius:50%;border:1px solid #ccc;flex-shrink:0;}
+.color-in{flex:1;height:38px;border:1px solid #ccc;border-radius:3px;background:transparent;cursor:pointer;padding:0;-webkit-appearance:none;}
+
+/* 削除確認シート */
+.del-item-preview{
+  background:#fff;border:1px solid #ddd;border-radius:3px;
+  padding:12px 14px;font-size:13px;color:#444;
+  margin-bottom:4px;letter-spacing:.5px;line-height:1.6;
+}
+
+/* トースト */
+.toast{
+  position:fixed;bottom:calc(28px + env(safe-area-inset-bottom,0px));
+  left:50%;transform:translateX(-50%) translateY(16px);
+  background:#2c2c2c;color:#f0e8d0;
+  font-family:'Hiragino Mincho ProN','Yu Mincho','serif';
+  font-size:12px;padding:10px 24px;border-radius:20px;opacity:0;
+  transition:opacity .25s,transform .25s;pointer-events:none;
+  white-space:nowrap;z-index:300;letter-spacing:1px;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+#file-in{display:none;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes heroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+
+
+
+/* 重要カード */
+.rec-card{
+  background:#fff8f0;border:1px solid #e8c89a;border-radius:4px;
+  padding:12px 14px;margin-bottom:8px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06);
+}
+.rec-top-row{display:flex;align-items:center;gap:8px;}
+.rec-num{
+  font-size:11px;color:#c8501a;border:1px solid #c8501a;
+  border-radius:20px;padding:2px 8px;flex-shrink:0;letter-spacing:1px;
+}
+.rec-text{font-size:16px;color:#111;flex:1;min-width:0;letter-spacing:.5px;}
+.rec-del{
+  background:transparent;border:none;color:#ccc;
+  font-size:20px;cursor:pointer;padding:0 2px;flex-shrink:0;
+  transition:color .12s;-webkit-appearance:none;line-height:1;
+}
+.rec-del:active{color:#c44;}
+.rec-meta{font-size:13px;color:#888;margin-top:5px;padding-left:2px;letter-spacing:.3px;}
+.rec-cat-badge{
+  display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;
+  letter-spacing:1px;margin-right:6px;
+  font-family:'Hiragino Mincho ProN','Yu Mincho','serif';
+}
+.rec-empty{text-align:center;color:#bbb;font-size:13px;padding:30px 0;line-height:2.6;letter-spacing:2px;}
+.rec-done{opacity:1 !important;} /* 重要は完了しても薄くしない */
+.rec-check{
+  width:22px;height:22px;border:1px solid #ccc;border-radius:50%;
+  background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:12px;flex-shrink:0;transition:all .15s;
+}
+.rec-check.ck{background:#d42020;border-color:#d42020;color:#fff;}
+</style>
+</head>
+<body>
+
+<!-- ═══ OPENING (DQ風) ═══ -->
+<div id="opening">
+  <div class="stars" id="stars"></div>
+  <div class="op-logo-wrap">
+    <div class="op-logo">冒険者のリマインダー</div>
+    <div class="op-logo-line"></div>
+  </div>
+  <div class="op-sub">～ たいせつなことを、わすれないために ～</div>
+  <div class="op-hero"><div class="sprite" id="sprite"></div></div>
+  <div class="op-btn-wrap">
+    <button class="op-btn" onclick="startApp()">ぼうけんをはじめる</button>
+  </div>
+</div>
+
+<!-- ═══ MAIN APP ═══ -->
+<div id="main-app">
+  <div class="stone-pat"></div>
+  <div class="app-header">
+    <div class="app-header-title">覚　書</div>
+    <div class="app-header-date" id="app-date"></div>
+  </div>
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('main')">一　覧</button>
+    <button class="tab-btn" onclick="switchTab('juyo')">重　要</button>
+    <button class="tab-btn" onclick="switchTab('cat')">分　類</button>
+    <button class="tab-btn" onclick="switchTab('bak')">保　存</button>
+  </div>
+  <div class="app-body">
+
+    <!-- 一覧タブ -->
+    <div class="tab-content active" id="tab-main">
+      <div class="card">
+        <div class="card-head"><div class="card-head-line"></div>新規登録</div>
+        <div class="card-body">
+          <div class="cat-grid" id="cat-sel" style="margin-bottom:12px;"></div>
+          <div class="field-row">
+            <input class="field-in" id="r-in" placeholder="用件を入力…" maxlength="40"
+              autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"/>
+          </div>
+          <label class="dt-toggle-row" onclick="toggleDt()">
+            <span class="dt-checkbox" id="dt-checkbox"></span>
+            <span class="dt-toggle-label">日時を設定する</span>
+          </label>
+          <div class="dt-fields" id="dt-fields">
+            <div class="field-row" style="margin-top:10px;">
+              <input class="field-date" id="r-dt" type="date"/>
+              <input class="field-time" id="r-tm" type="time"/>
+            </div>
+          </div>
+          <div style="margin-top:4px;">
+            <button class="btn-primary" style="width:100%;font-size:16px;padding:10px;" onclick="addR()">登　録</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-head-line"></div>覚書一覧</div>
+        <div class="card-body">
+          <div class="filter-row" id="f-row" style="margin-bottom:6px;"></div>
+          <div class="memo-list" id="memo-list"></div>
+          <div class="stats-row" id="stats"></div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- 重要タブ -->
+    <div class="tab-content" id="tab-juyo">
+      <div class="card">
+        <div class="card-head"><div class="card-head-line"></div>重要・完了済みその他</div>
+        <div class="card-body">
+          <div id="juyo-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 分類タブ -->
+    <div class="tab-content" id="tab-cat">
+      <div class="card">
+        <div class="card-head"><div class="card-head-line"></div>分類の編集</div>
+        <div class="card-body">
+          <div class="cat-edit-list" id="cat-edit-list"></div>
+          <div class="hint">※ 分類名と色を変更できます　※ 最大８種まで</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-head-line"></div>新規分類</div>
+        <div class="card-body">
+          <div class="new-cat-row">
+            <input class="field-in" id="new-cat-name" placeholder="分類名…" maxlength="6"
+              autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"
+              style="font-size:13px;"/>
+            <input class="color-swatch" id="new-cat-color" type="color" value="#3068c0"/>
+            <button class="btn-primary" onclick="addCat()" style="padding:11px 14px;font-size:12px;">追　加</button>
+          </div>
+          <div class="hint" style="margin-top:8px;">名前を入力して色を選択し追加</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 保存タブ -->
+    <div class="tab-content" id="tab-bak">
+      <div class="card">
+        <div class="card-head"><div class="card-head-line"></div>バックアップ</div>
+        <div class="card-body">
+          <button class="btn-outline" onclick="doExport()">クリップボードにコピー</button>
+          <button class="btn-outline" onclick="doDownload()">ファイルとして保存</button>
+          <div class="bak-note">覚書データと分類設定の両方が保存されます</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-head-line"></div>リストア</div>
+        <div class="card-body">
+          <button class="btn-outline" onclick="document.getElementById('file-in').click()">ファイルから復元</button>
+          <span class="bak-label">または貼り付けて復元</span>
+          <textarea class="bak-textarea" id="bak-text" placeholder="バックアップデータをここに貼り付け…"></textarea>
+          <button class="btn-outline" style="margin-top:10px;" onclick="doImportText()">貼り付けデータから復元</button>
+          <button class="btn-danger" onclick="askReset()">全データをリセット</button>
+          <div class="bak-note">※ 復元すると現在のデータは上書きされます<br>※ 復元前にバックアップを推奨</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ 削除確認シート ═══ -->
+<div class="overlay" id="del-sheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">削　除</div>
+    <div class="sheet-body">
+      <div style="font-size:12px;color:#333;letter-spacing:1px;margin-bottom:10px;">この覚書を削除しますか？</div>
+      <div class="del-item-preview" id="del-preview"></div>
+    </div>
+    <div class="sheet-btns">
+      <button class="sheet-btn danger" onclick="confirmDel()">削　除　す　る</button>
+      <button class="sheet-btn" onclick="closeSheet('del-sheet')">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 分類変更シート ═══ -->
+<div class="overlay" id="catchange-sheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">分類を変更</div>
+    <div class="sheet-body">
+      <div id="cat-choice-list"></div>
+    </div>
+    <div class="sheet-btns">
+      <button class="sheet-btn" onclick="closeSheet('catchange-sheet')">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 分類編集シート ═══ -->
+<div class="overlay" id="catedit-sheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">分類を編集</div>
+    <div class="sheet-body">
+      <div class="form-group">
+        <span class="form-label">分類名（最大６文字）</span>
+        <input class="form-in" id="edit-cat-name" maxlength="6"
+          autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"/>
+      </div>
+      <div class="form-group">
+        <span class="form-label">カラー</span>
+        <div class="color-preview-row">
+          <div class="color-preview" id="edit-color-preview"></div>
+          <input class="color-in" type="color" id="edit-cat-color" oninput="updateColorPreview()"/>
+        </div>
+      </div>
+    </div>
+    <div class="sheet-btns">
+      <button class="sheet-btn selected" onclick="saveCatEdit()">保　存</button>
+      <button class="sheet-btn danger" onclick="askDelCat()">この分類を削除</button>
+      <button class="sheet-btn" onclick="closeSheet('catedit-sheet')">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 分類削除確認 ═══ -->
+<div class="overlay" id="delcat-sheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">分類を削除</div>
+    <div class="sheet-body">
+      <div style="font-size:13px;color:#111;letter-spacing:.5px;line-height:2;">
+        この分類を削除しますか？<br>
+        その分類の覚書は「その他」に移動します。
+      </div>
+      <div class="del-item-preview" id="delcat-preview" style="margin-top:10px;"></div>
+    </div>
+    <div class="sheet-btns">
+      <button class="sheet-btn danger" onclick="confirmDelCat()">削　除　す　る</button>
+      <button class="sheet-btn" onclick="closeSheet('delcat-sheet')">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ リセット確認 ═══ -->
+<div class="overlay" id="reset-sheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">全データをリセット</div>
+    <div class="sheet-body">
+      <div style="font-size:13px;color:#111;letter-spacing:.5px;line-height:2.2;">
+        全ての覚書と分類設定を削除します。<br>この操作は元に戻せません。<br>事前にバックアップを推奨します。
+      </div>
+    </div>
+    <div class="sheet-btns">
+      <button class="sheet-btn danger" onclick="confirmReset()">リセットする</button>
+      <button class="sheet-btn" onclick="closeSheet('reset-sheet')">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="file-in" accept=".json,application/json" onchange="doImportFile(event)"/>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── 星 ── */
+(function(){
+  const s=document.getElementById('stars');
+  for(let i=0;i<65;i++){
+    const d=document.createElement('div'),sz=Math.random()<.25?2:1;
+    d.className='star';
+    d.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--dl:${Math.random()*5}s;`;
+    s.appendChild(d);
+  }
+})();
+
+/* ── スプライト ── */
+const ROWS=[
+  '000ss000ss000','00sssssssss00','0sssfffffff00','0sffsfffffff0',
+  '0sfffhhhhhff0','0sfffhffhfff0','0sfffhhhhhff0','0sbbbffffffff',
+  '0sbbbbbbbbbb0','0swbwwbbwwbw0','00wwww00wwww0','00www000www00','000ww0000ww00',
+].map(r=>r.split(''));
+const PC={s:'px-s',f:'px-f',h:'px-h',b:'px-b',w:'px-w','0':'px-0'};
+const sp=document.getElementById('sprite');
+sp.style.gridTemplateColumns=`repeat(${ROWS[0].length},10px)`;
+sp.style.gridTemplateRows=`repeat(${ROWS.length},10px)`;
+ROWS.forEach(row=>row.forEach(c=>{const d=document.createElement('div');d.className=PC[c]||'px-0';sp.appendChild(d);}));
+
+/* ── Web Audio ── */
+let AC;
+function ac(){
+  if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();
+  if(AC.state==='suspended')AC.resume();
+  return AC;
+}
+function tone(f,d,type='square',vol=0.09,dl=0){
+  try{
+    const c=ac(),now=c.currentTime+dl;
+    const o=c.createOscillator(),g=c.createGain();
+    o.connect(g);g.connect(c.destination);
+    o.type=type;o.frequency.value=f;
+    g.gain.setValueAtTime(vol,now);
+    g.gain.exponentialRampToValueAtTime(0.001,now+d);
+    o.start(now);o.stop(now+d+.01);
+  }catch(e){}
+}
+const SND={
+  /* オープニング文字カーソル */
+  cursor:  ()=>tone(1200,.025,'sine',.04),
+  /* カテゴリ選択（音程が上がる） */
+  select:  i=>tone(330+i*55,.08,'sine',.09),
+  /* フィルター切替 */
+  filter:  ()=>{tone(660,.05,'sine',.07);tone(880,.05,'sine',.07,.06);},
+  /* テキスト入力キー */
+  key:     ()=>tone(1100,.018,'sine',.03),
+  /* タブ切替 */
+  tab(){tone(440,.06,'sine',.07,0);tone(550,.06,'sine',.07,.07);},
+  /* チェックボックス（日時）*/
+  check:   ()=>{tone(660,.07,'sine',.08);tone(990,.07,'sine',.08,.08);},
+  /* ＋登録ファンファーレ */
+  add(){
+    [[392,.12,0],[523,.12,.13],[659,.12,.26],[784,.18,.39],
+     [659,.10,.58],[784,.10,.69],[1047,.28,.80]]
+    .forEach(([f,d,dl])=>tone(f,d,'square',.11,dl));
+  },
+  /* 完了チェック */
+  done(){
+    tone(523,.08,'sine',.10,0);
+    tone(659,.08,'sine',.10,.09);
+    tone(784,.14,'sine',.10,.18);
+  },
+  /* 完了解除 */
+  undo(){tone(400,.08,'sine',.08,0);tone(330,.12,'sine',.08,.09);},
+  /* 削除確認ダイアログ */
+  delConf(){tone(300,.10,'sine',.09,0);tone(240,.15,'sine',.09,.12);},
+  /* 削除実行 */
+  del(){
+    tone(220,.08,'sawtooth',.10,0);
+    tone(185,.10,'sawtooth',.10,.09);
+    tone(155,.18,'sawtooth',.10,.19);
+  },
+  /* キャンセル */
+  cancel:  ()=>{tone(550,.06,'sine',.07);tone(440,.09,'sine',.07,.07);},
+  /* 保存成功 */
+  save(){tone(784,.09,'sine',.09,0);tone(1047,.14,'sine',.09,.10);},
+  /* エラー */
+  error(){tone(220,.12,'square',.10,0);tone(196,.16,'square',.10,.14);},
+  /* シート開く */
+  sheetOpen: ()=>{tone(330,.06,'sine',.07);tone(440,.06,'sine',.07,.07);},
+  /* 分類変更完了 */
+  catChange(){tone(440,.07,'sine',.08,0);tone(554,.07,'sine',.08,.08);tone(659,.11,'sine',.08,.16);},
+  /* バックアップ */
+  backup(){
+    [[392,.10,0],[523,.10,.11],[659,.14,.22]].forEach(([f,d,dl])=>tone(f,d,'sine',.09,dl));
+  },
+  /* オープニングファンファーレ */
+  open(){
+    [[330,.14,0],[392,.14,.15],[523,.14,.30],[659,.20,.45],
+     [784,.14,.66],[659,.12,.81],[784,.10,.94],[1047,.36,1.06]]
+    .forEach(([f,d,dl])=>tone(f,d,'square',.12,dl));
+  },
+};
+
+
+function startApp(){
+  SND.open();
+  const op=document.getElementById('opening');
+  op.style.opacity='0';
+  setTimeout(()=>{op.style.display='none';document.getElementById('main-app').classList.add('show');initApp();},600);
+}
+
+/* ── データ ── */
+const DEFAULT_CATS=[
+  {id:'daily',  label:'日常',  color:'#2979d4'},
+  {id:'work',   label:'仕事',  color:'#d4820a'},
+  {id:'shop',   label:'買物',  color:'#18a058'},
+  {id:'health', label:'健康',  color:'#c2185b'},
+  {id:'other',  label:'その他',color:'#7b52d4'},
+  {id:'juyo', label:'重要',  color:'#d42020'},
+];
+let cats=[],items=[],records=[];
+function loadData(){
+  try{cats=JSON.parse(localStorage.getItem('dq_cats_v5')||'null')||JSON.parse(JSON.stringify(DEFAULT_CATS));}
+  catch(e){cats=JSON.parse(JSON.stringify(DEFAULT_CATS));}
+  try{items=JSON.parse(localStorage.getItem('dq_rem_v5')||'[]');}catch(e){items=[];}
+  try{records=JSON.parse(localStorage.getItem('dq_juyo_v5')||'[]');}catch(e){records=[];}
+}
+function saveData(){
+  localStorage.setItem('dq_cats_v5',JSON.stringify(cats));
+  localStorage.setItem('dq_rem_v5',JSON.stringify(items));
+  localStorage.setItem('dq_juyo_v5',JSON.stringify(records));
+}
+loadData();
+function getCat(id){return cats.find(c=>c.id===id)||{id:'other',label:'その他',color:'#606060'};}
+
+/* ── トースト ── */
+let tT;
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(tT);tT=setTimeout(()=>el.classList.remove('show'),2400);
+}
+
+/* ── シート ── */
+function openSheet(id){SND.sheetOpen();document.getElementById(id).classList.add('show');}
+function closeSheet(id){
+  SND.cancel();
+  document.getElementById(id).classList.remove('show');
+}
+document.querySelectorAll('.overlay').forEach(el=>{
+  el.addEventListener('click',function(e){if(e.target===this)closeSheet(this.id);});
+});
+
+/* ── タブ ── */
+let currentTab='main';
+function switchTab(name){
+  SND.tab();currentTab=name;
+  document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  document.querySelectorAll('.tab-btn')[{main:0,juyo:1,cat:2,bak:3}[name]].classList.add('active');
+  if(name==='cat')renderCatEdit();
+  if(name==='juyo')renderJuyo();
+}
+
+/* ── 初期化 ── */
+let selCat,fCat='all',fDone='todo';
+function initApp(){
+  selCat=cats[0]?.id||'other';
+  const d=new Date();
+  const days=['日','月','火','水','木','金','土'];
+  document.getElementById('app-date').innerHTML=
+    `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日<br>${days[d.getDay()]}曜日`;
+  document.getElementById('r-dt').value=d.toISOString().slice(0,10);
+  const hh=String(d.getHours()).padStart(2,'0'),mm=String(d.getMinutes()).padStart(2,'0');
+  document.getElementById('r-tm').value=`${hh}:${mm}`;
+  document.getElementById('r-in').addEventListener('keydown',e=>{if(e.key==='Enter')addR();else SND.key();});
+  buildCatSel();
+  render();
+}
+
+/* ── メインレンダー ── */
+function buildCatSel(){
+  document.getElementById('cat-sel').innerHTML=cats.map((c,i)=>
+    `<button class="cat-chip${selCat===c.id?' sel':''}" style="color:${c.color};border-color:${c.color};" ontouchstart="" onclick="pickCat('${c.id}',${i})">
+      <span>${c.label}</span>
+    </button>`
+  ).join('');
+}
+function pickCat(id,i){SND.select(i);selCat=id;buildCatSel();}
+
+function buildFilters(){
+  const clist=[['all','すべて'],...cats.filter(c=>c.id!=='juyo').map(c=>[c.id,c.label])];
+  const dlist=[['all','すべて'],['todo','未済'],['done','完了']];
+  document.getElementById('f-row').innerHTML=
+    clist.map(([id,l])=>`<button class="filter-pill${fCat===id?' on':''}" ontouchstart="" onclick="setFC('${id}')">${l}</button>`).join('')+
+    '<span style="display:inline-block;width:5px;"></span>'+
+    dlist.map(([id,l])=>`<button class="filter-pill${fDone===id?(id==='done'?' on done-on':id==='todo'?' on todo-on':' on'):''}" ontouchstart="" onclick="setFD('${id}')">${l}</button>`).join('');
+}
+function setFC(id){SND.filter();fCat=id;render();}
+function setFD(id){SND.filter();fDone=id;render();}
+
+let dtEnabled=false;
+function toggleDt(){
+  dtEnabled=!dtEnabled;
+  const cb=document.getElementById('dt-checkbox');
+  const fields=document.getElementById('dt-fields');
+  if(dtEnabled){cb.classList.add('on');fields.classList.add('show');}
+  else{cb.classList.remove('on');fields.classList.remove('show');}
+  SND.check();
+}
+function addR(){
+  const txt=document.getElementById('r-in').value.trim();
+  if(!txt){SND.error();toast('用件を入力してください');return;}
+  const cat=selCat||cats[0]?.id||'other';
+  const date=dtEnabled?document.getElementById('r-dt').value:'';
+  const time=dtEnabled?document.getElementById('r-tm').value:'';
+  items.unshift({id:Date.now(),text:txt,cat,date,time,done:false});
+  saveData();document.getElementById('r-in').value='';SND.add();toast('登録しました');render();
+}
+function toggleDone(id){
+  const r=items.find(x=>x.id===id);if(!r)return;
+  r.done=!r.done;saveData();
+  if(r.done){SND.done();toast('完了しました');}else{SND.undo();toast('未済に戻しました');}
+  render();
+  if(r.cat==='juyo'||(r.cat==='other'&&r.done))renderJuyo();
+  if(r.cat==='other')render();
+}
+
+/* 削除確認 */
+let pendingDelId=null;
+function askDel(id){
+  SND.delConf();pendingDelId=id;
+  const r=items.find(x=>x.id===id);
+  document.getElementById('del-preview').textContent=r?r.text:'';
+  openSheet('del-sheet');
+}
+function confirmDel(){
+  if(pendingDelId==null)return;
+  SND.del();items=items.filter(x=>x.id!==pendingDelId);
+  saveData();pendingDelId=null;
+  document.getElementById('del-sheet').classList.remove('show');
+  toast('削除しました');render();
+}
+
+/* 分類変更 */
+let pendingCatId=null;
+function askCatChange(id){
+  SND.tab();pendingCatId=id;
+  const r=items.find(x=>x.id===id);
+  document.getElementById('cat-choice-list').innerHTML=cats.map(c=>`
+    <button class="cat-choice${r&&r.cat===c.id?' cur':''}" ontouchstart="" onclick="applyCatChange('${c.id}')">
+      <span class="cat-choice-dot" style="background:${c.color};"></span>
+      ${c.label}${r&&r.cat===c.id?' ✓':''}
+    </button>`).join('');
+  openSheet('catchange-sheet');
+}
+function applyCatChange(catId){
+  SND.save();
+  const r=items.find(x=>x.id===pendingCatId);
+  if(r){r.cat=catId;saveData();}
+  document.getElementById('catchange-sheet').classList.remove('show');
+  pendingCatId=null;SND.catChange();toast('分類を変更しました');render();
+}
+
+function isOver(r){return r.date&&!r.done&&r.date<new Date().toISOString().slice(0,10);}
+function fmtD(d,t){
+  if(!d)return'';
+  const[y,m,dy]=d.split('-');
+  const week=['日','月','火','水','木','金','土'][new Date(d).getDay()];
+  let s=`${parseInt(m)}月${parseInt(dy)}日（${week}）`;
+  if(t)s+=` ${t}`;
+  return s;
+}
+
+function render(){
+  if(!selCat||!cats.find(c=>c.id===selCat))selCat=cats[0]?.id||'other';
+  buildFilters();
+  const list=items.filter(r=>{
+    if(fCat==='juyo')return r.cat==='juyo'||(r.cat==='other'&&r.done); // 重要タブ：重要 + その他の完了済み
+    if(r.cat==='juyo')return false; // 重要は一覧に出さない
+    if(r.cat==='other'&&r.done)return false; // その他の完了済みは一覧に出さない
+    if(fCat!=='all'&&r.cat!==fCat)return false;
+    if(fDone==='todo'&&r.done)return false;
+    if(fDone==='done'&&!r.done)return false;
+    return true;
+  });
+  const el=document.getElementById('memo-list');
+  if(!list.length){
+    el.innerHTML='<div class="empty-msg">覚書なし</div>';
+  } else {
+    el.innerHTML=list.map(r=>{
+      const c=getCat(r.cat);const over=isOver(r);
+      const bgAlpha=r.done?'22':'18';
+      return`<div class="memo-card${r.done?' done':''}${over?' over':''}">
+        <div class="memo-top-row">
+          <div class="memo-check${r.done?' ck':''}" ontouchstart="" onclick="toggleDone(${r.id})">${r.done?'✓':''}</div>
+          <div class="memo-badge" style="color:${c.color};border:1px solid ${c.color};background:${c.color}${bgAlpha};" ontouchstart="" onclick="askCatChange(${r.id})">${c.label}</div>
+          <div class="memo-text">${r.text}</div>
+          <button class="memo-del-top" ontouchstart="" onclick="askDel(${r.id})">×</button>
+        </div>
+        ${r.date?`<div class="memo-date-row"><div class="memo-date${over?' over':''}">${over?'期限超過 ':''}${fmtD(r.date,r.time)}</div></div>`:''}
+
+      </div>`;
+    }).join('');
+  }
+  const mainItems=items.filter(r=>r.cat!=='juyo'&&!(r.cat==='other'&&r.done));
+  const tot=mainItems.length,dn=mainItems.filter(r=>r.done).length,ov=mainItems.filter(r=>isOver(r)).length;
+  document.getElementById('stats').innerHTML=
+    `<div class="stat-cell"><div class="stat-val">${tot}</div><div class="stat-lbl">登録</div></div>`+
+    `<div class="stat-cell"><div class="stat-val" style="color:#2e7d52;">${dn}</div><div class="stat-lbl">完了</div></div>`+
+    `<div class="stat-cell"><div class="stat-val" style="color:#4a6fa5;">${tot-dn}</div><div class="stat-lbl">未済</div></div>`+
+    (ov?`<div class="stat-cell"><div class="stat-val" style="color:#c44;">${ov}</div><div class="stat-lbl">超過</div></div>`:'');
+}
+
+
+/* ══ 重要 ══ */
+function renderJuyo(){
+  const el=document.getElementById('juyo-list');
+  const list=items.filter(r=>r.cat==='juyo'||(r.cat==='other'&&r.done));
+  if(!list.length){
+    el.innerHTML='<div class="rec-empty">重要項目なし</div>';return;
+  }
+  el.innerHTML=list.map((r,i)=>{
+    const c=getCat(r.cat);
+    const over=isOver(r);
+    return`<div class="rec-card${r.done?' rec-done':''}">
+      <div class="rec-top-row">
+        <div class="rec-check${r.done?' ck':''}" ontouchstart="" onclick="toggleDone(${r.id})">${r.done?'✓':''}</div>
+        <div class="rec-text">${r.text}</div>
+        <button class="rec-del" ontouchstart="" onclick="askDel(${r.id})">×</button>
+      </div>
+      ${r.date?`<div class="rec-meta">${over?'<span style="color:#c44;">期限超過 </span>':''}${fmtD(r.date,r.time)}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+/* ══ 分類編集 ══ */
+function renderCatEdit(){
+  document.getElementById('cat-edit-list').innerHTML=cats.map((c,i)=>{
+    const cnt=items.filter(r=>r.cat===c.id).length;
+    return`<div class="cat-edit-row">
+      <div class="cat-dot" style="background:${c.color};"></div>
+      <div class="cat-edit-name">${c.label}</div>
+      <div class="cat-count">${cnt}件</div>
+      <button class="cat-edit-btn" ontouchstart="" onclick="openCatEdit(${i})">編集</button>
+    </div>`;
+  }).join('');
+}
+let editingCatIdx=null;
+function openCatEdit(idx){
+  SND.tab();editingCatIdx=idx;
+  const c=cats[idx];
+  document.getElementById('edit-cat-name').value=c.label;
+  document.getElementById('edit-cat-color').value=c.color;
+  document.getElementById('edit-color-preview').style.background=c.color;
+  openSheet('catedit-sheet');
+}
+function updateColorPreview(){
+  document.getElementById('edit-color-preview').style.background=document.getElementById('edit-cat-color').value;
+}
+function saveCatEdit(){
+  const name=document.getElementById('edit-cat-name').value.trim();
+  if(!name){SND.error();toast('分類名を入力してください');return;}
+  SND.save();
+  cats[editingCatIdx].label=name;
+  cats[editingCatIdx].color=document.getElementById('edit-cat-color').value;
+  saveData();SND.save();document.getElementById('catedit-sheet').classList.remove('show');
+  toast('保存しました');renderCatEdit();render();
+}
+let pendingDelCatIdx=null;
+function askDelCat(){
+  SND.delConf();pendingDelCatIdx=editingCatIdx;
+  document.getElementById('delcat-preview').textContent=cats[editingCatIdx].label;
+  document.getElementById('catedit-sheet').classList.remove('show');
+  openSheet('delcat-sheet');
+}
+function confirmDelCat(){
+  if(pendingDelCatIdx==null)return;
+  SND.del();
+  const delId=cats[pendingDelCatIdx].id;
+  const fallback=cats.find((_,i)=>i!==pendingDelCatIdx)?.id||'other';
+  items.forEach(r=>{if(r.cat===delId)r.cat=fallback;});
+  cats.splice(pendingDelCatIdx,1);
+  if(cats.length===0)cats=JSON.parse(JSON.stringify(DEFAULT_CATS));
+  saveData();pendingDelCatIdx=null;
+  document.getElementById('delcat-sheet').classList.remove('show');
+  toast('削除しました');renderCatEdit();render();
+}
+function addCat(){
+  if(cats.length>=8){SND.error();toast('分類は８種までです');return;}
+  const name=document.getElementById('new-cat-name').value.trim();
+  if(!name){SND.error();toast('分類名を入力してください');return;}
+  const color=document.getElementById('new-cat-color').value;
+  cats.push({id:'cat_'+Date.now(),label:name,color});
+  saveData();document.getElementById('new-cat-name').value='';
+  SND.catChange();toast('追加しました');renderCatEdit();render();
+}
+
+/* ══ バックアップ ══ */
+function buildBackup(){return JSON.stringify({version:3,exported:new Date().toISOString(),cats,items,records},null,2);}
+function doExport(){
+  SND.backup();const data=buildBackup();
+  if(navigator.clipboard?.writeText){
+    navigator.clipboard.writeText(data).then(()=>toast('コピーしました')).catch(()=>fallbackCopy(data));
+  } else fallbackCopy(data);
+}
+function fallbackCopy(data){
+  const ta=document.createElement('textarea');ta.value=data;ta.style.cssText='position:fixed;opacity:0;';
+  document.body.appendChild(ta);ta.focus();ta.select();
+  try{document.execCommand('copy');toast('コピーしました');}catch(e){toast('コピーできませんでした');}
+  document.body.removeChild(ta);
+}
+function doDownload(){
+  SND.backup();const data=buildBackup();
+  const blob=new Blob([data],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  const d=new Date();const stamp=`${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+  a.href=url;a.download=`kakioki_backup_${stamp}.json`;
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);document.body.removeChild(a);},1000);
+  toast('ファイルを保存しました');
+}
+function doImportText(){
+  const text=document.getElementById('bak-text').value.trim();
+  if(!text){SND.error();toast('データを貼り付けてください');return;}
+  importData(text);
+}
+function doImportFile(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>importData(ev.target.result);
+  reader.readAsText(file);e.target.value='';
+}
+function importData(text){
+  try{
+    const d=JSON.parse(text);
+    if(!d.items||!Array.isArray(d.items))throw new Error();
+    items=d.items;
+    if(d.cats&&Array.isArray(d.cats)&&d.cats.length>0)cats=d.cats;
+    if(d.records&&Array.isArray(d.records))records=d.records;
+    saveData();SND.backup();toast('復元しました');
+    render();if(currentTab==='cat')renderCatEdit();
+  }catch(e){SND.error();toast('データが不正です');}
+}
+function askReset(){SND.delConf();openSheet('reset-sheet');}
+function confirmReset(){
+  SND.del();items=[];records=[];cats=JSON.parse(JSON.stringify(DEFAULT_CATS));
+  saveData();document.getElementById('reset-sheet').classList.remove('show');
+  toast('リセットしました');render();if(currentTab==='cat')renderCatEdit();
+}
+</script>
+</body>
+</html>
