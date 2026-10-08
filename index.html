@@ -1170,17 +1170,17 @@ function confirmReset(){
 })();
 
 // =============================================================
-// ホーム画面アイコン：オレンジの地に和紙のメモ（チェックリスト）と朱印「覚」
+// ホーム画面アイコン：黒の地に和紙のメモ（チェックリスト）と朱印「覚」、左上に Claude Code のキャラクター
 // =============================================================
 (function drawAppIcon() {
   const S = 512, c = document.createElement('canvas'); c.width = c.height = S;
   const ctx = c.getContext('2d');
-  // 背景：オープニングと同じオレンジ
+  // 背景：黒
   const g = ctx.createRadialGradient(S*0.35, S*0.3, 40, S/2, S/2, S*0.75);
-  g.addColorStop(0, '#e8701e'); g.addColorStop(1, '#a83a00');
+  g.addColorStop(0, '#2e2c2a'); g.addColorStop(1, '#0c0b0a');
   ctx.fillStyle = g; ctx.fillRect(0, 0, S, S);
-  // 白の細枠
-  ctx.strokeStyle = 'rgba(255,240,220,.6)'; ctx.lineWidth = 4; ctx.strokeRect(30, 30, S-60, S-60);
+  // 金の細枠
+  ctx.strokeStyle = 'rgba(200,168,96,.55)'; ctx.lineWidth = 4; ctx.strokeRect(30, 30, S-60, S-60);
   // 和紙のメモ（少し傾ける）
   ctx.save(); ctx.translate(244, 262); ctx.rotate(-6*Math.PI/180);
   ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 10;
@@ -1203,12 +1203,21 @@ function confirmReset(){
   // 朱印「覚」
   ctx.save(); ctx.translate(352, 362); ctx.rotate(5*Math.PI/180);
   ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 12; ctx.shadowOffsetY = 4;
-  ctx.fillStyle = '#b0160c'; ctx.fillRect(-72, -72, 144, 144);
+  ctx.fillStyle = '#c4321e'; ctx.fillRect(-72, -72, 144, 144);
   ctx.shadowColor = 'transparent';
   ctx.strokeStyle = '#f6e8dc'; ctx.lineWidth = 5; ctx.strokeRect(-60, -60, 120, 120);
   ctx.fillStyle = '#fbf1e8'; ctx.font = 'bold 92px "Hiragino Mincho ProN","Yu Mincho","YuMincho",serif';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('覚', 0, 6);
   ctx.restore();
+  // 左上に Claude Code のキャラクター（画面左上で動いているものと同じドット絵）
+  (function(){
+    var p=6, ox=44, oy=44;   // 1ドットの大きさと左上の位置
+    var px=function(x,y,w,h,col){ctx.fillStyle=col;ctx.fillRect(ox+x*p,oy+y*p,w*p,h*p);};
+    var o='#d97757';
+    px(2,0,8,6,o); px(0,2,2,2,o); px(10,2,2,2,o);               // 体と両腕
+    px(2,6,1,2,o); px(4,6,1,2,o); px(7,6,1,2,o); px(9,6,1,2,o); // 足4本
+    px(3,1,1,1,'#1a1612'); px(8,1,1,1,'#1a1612');               // 目
+  })();
   const url = c.toDataURL('image/png');
   document.getElementById('appleIcon').href = url;
   document.getElementById('favIcon').href = url;
