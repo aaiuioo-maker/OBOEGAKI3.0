@@ -69,6 +69,20 @@ body{font-family:'Hiragino Mincho ProN','Yu Mincho','ヒラギノ明朝 ProN','s
   font-size:22px;font-weight:400;color:#f0e8d0;
   letter-spacing:6px;
 }
+.app-header-left{display:flex;align-items:center;gap:8px;}
+
+/* === Claude Code のキャラクター（ヘッダー左上） === */
+.cc-wrap { width: 62px; height: 40px; flex-shrink: 0; display: flex; justify-content: center; }
+.cc-mascot { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; padding-top: 4px; }
+.cc-mascot svg { width: 36px; height: 27px; shape-rendering: crispEdges; overflow: visible; transform-origin: center; }
+/* 歩く・立ち止まる・手足の動きは、下のスクリプト（ccMascot）で1コマずつ動かしている */
+.cc-mascot .cc-label { font-family: -apple-system, "Segoe UI", sans-serif; font-size: 7px; letter-spacing: 0.05em; color: #d97757; opacity: 0.8; white-space: nowrap; }
+.cc-body { fill: #d97757; }
+.cc-eye { fill: #1a1612; transform-box: fill-box; transform-origin: center; }
+/* ときどきまばたき */
+.cc-eye { animation: cc-blink 4s infinite; }
+@keyframes cc-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+
 .app-header-date{font-size:11px;color:#ccc;letter-spacing:1px;text-align:right;line-height:1.6;}
 
 /* タブバー */
@@ -423,7 +437,29 @@ body{font-family:'Hiragino Mincho ProN','Yu Mincho','ヒラギノ明朝 ProN','s
 <div id="main-app">
   <div class="stone-pat"></div>
   <div class="app-header">
+    <div class="app-header-left">
+    <div class="cc-wrap">
+      <a class="cc-mascot" href="https://claude.com/claude-code" target="_blank" rel="noopener" title="Claude Code で作成" aria-label="Claude Code で作成">
+        <!-- 1マス＝1ドットのドット絵（横12×縦8マス：体6段＋足2段） -->
+        <svg viewBox="0 -1 12 9" aria-hidden="true">
+          <!-- 足（左から順に4本）。上げるときは高さを1マスにする -->
+          <rect class="cc-body cc-leg" x="2" y="6" width="1" height="2"/>
+          <rect class="cc-body cc-leg" x="4" y="6" width="1" height="2"/>
+          <rect class="cc-body cc-leg" x="7" y="6" width="1" height="2"/>
+          <rect class="cc-body cc-leg" x="9" y="6" width="1" height="2"/>
+          <g class="cc-hop">
+            <rect class="cc-body" x="2" y="0" width="8" height="6"/>
+            <rect class="cc-body cc-arm-l" x="0" y="2" width="2" height="2"/>
+            <rect class="cc-body cc-arm-r" x="10" y="2" width="2" height="2"/>
+            <rect class="cc-eye" x="3" y="1" width="1" height="1"/>
+            <rect class="cc-eye" x="8" y="1" width="1" height="1"/>
+          </g>
+        </svg>
+        <span class="cc-label">Claude Code</span>
+      </a>
+    </div>
     <div class="app-header-title">覚　書</div>
+    </div>
     <div class="app-header-date" id="app-date"></div>
   </div>
   <div class="tab-bar">
@@ -795,7 +831,7 @@ function initApp(){
   const days=['日','月','火','水','木','金','土'];
   document.getElementById('app-date').innerHTML=
     `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日<br>${days[d.getDay()]}曜日`;
-  document.getElementById('r-dt').value=d.toISOString().slice(0,10);
+  document.getElementById('r-dt').value=ymd(d);
   const hh=String(d.getHours()).padStart(2,'0'),mm=String(d.getMinutes()).padStart(2,'0');
   document.getElementById('r-tm').value=`${hh}:${mm}`;
   document.getElementById('r-in').addEventListener('keydown',e=>{if(e.key==='Enter')addR();else SND.key();});
@@ -846,9 +882,7 @@ function toggleDone(id){
   const r=items.find(x=>x.id===id);if(!r)return;
   r.done=!r.done;saveData();
   if(r.done){SND.done();toast('完了しました');}else{SND.undo();toast('未済に戻しました');}
-  render();
-  if(r.cat==='juyo'||(r.cat==='other'&&r.done))renderJuyo();
-  if(r.cat==='other')render();
+  render();renderJuyo();
 }
 
 /* 削除確認 */
@@ -864,7 +898,7 @@ function confirmDel(){
   SND.del();items=items.filter(x=>x.id!==pendingDelId);
   saveData();pendingDelId=null;
   document.getElementById('del-sheet').classList.remove('show');
-  toast('削除しました');render();
+  toast('削除しました');render();renderJuyo();
 }
 
 /* 分類変更 */
@@ -887,7 +921,9 @@ function applyCatChange(catId){
   pendingCatId=null;SND.catChange();toast('分類を変更しました');render();
 }
 
-function isOver(r){return r.date&&!r.done&&r.date<new Date().toISOString().slice(0,10);}
+function ymd(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;} // 日本時間の日付（toISOString は世界標準時なので朝9時前に1日ずれる）
+function esc(s){return String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch]);}
+function isOver(r){return r.date&&!r.done&&r.date<ymd(new Date());}
 function fmtD(d,t){
   if(!d)return'';
   const[y,m,dy]=d.split('-');
@@ -920,7 +956,7 @@ function render(){
         <div class="memo-top-row">
           <div class="memo-check${r.done?' ck':''}" ontouchstart="" onclick="toggleDone(${r.id})">${r.done?'✓':''}</div>
           <div class="memo-badge" style="color:${c.color};border:1px solid ${c.color};background:${c.color}${bgAlpha};" ontouchstart="" onclick="askCatChange(${r.id})">${c.label}</div>
-          <div class="memo-text">${r.text}</div>
+          <div class="memo-text">${esc(r.text)}</div>
           <button class="memo-del-top" ontouchstart="" onclick="askDel(${r.id})">×</button>
         </div>
         ${r.date?`<div class="memo-date-row"><div class="memo-date${over?' over':''}">${over?'期限超過 ':''}${fmtD(r.date,r.time)}</div></div>`:''}
@@ -951,7 +987,7 @@ function renderJuyo(){
     return`<div class="rec-card${r.done?' rec-done':''}">
       <div class="rec-top-row">
         <div class="rec-check${r.done?' ck':''}" ontouchstart="" onclick="toggleDone(${r.id})">${r.done?'✓':''}</div>
-        <div class="rec-text">${r.text}</div>
+        <div class="rec-text">${esc(r.text)}</div>
         <button class="rec-del" ontouchstart="" onclick="askDel(${r.id})">×</button>
       </div>
       ${r.date?`<div class="rec-meta">${over?'<span style="color:#c44;">期限超過 </span>':''}${fmtD(r.date,r.time)}</div>`:''}
@@ -1073,6 +1109,63 @@ function confirmReset(){
   saveData();document.getElementById('reset-sheet').classList.remove('show');
   toast('リセットしました');render();if(currentTab==='cat')renderCatEdit();
 }
+
+// =============================================================
+// Claude Code のキャラクター（ヘッダー左上）
+//   右へ歩く → 端で立ち止まって手足をちょこちょこ動かし、振り向く → 左へ戻る … を繰り返す
+// =============================================================
+(function ccMascot() {
+  const svg = document.querySelector('.cc-mascot svg');
+  if (!svg) return;
+  const body = svg.querySelector('.cc-hop');
+  const armL = svg.querySelector('.cc-arm-l');
+  const armR = svg.querySelector('.cc-arm-r');
+  const legs = Array.from(svg.querySelectorAll('.cc-leg')); // 左から順に4本
+
+  const HALF = 12;        // 真ん中から左右それぞれに歩く幅（px）
+  const STEP = 2;         // 1歩で進む距離（px）
+  const TICK = 220;       // 1コマの長さ（ミリ秒）
+  const IDLE_TICKS = 9;   // 端で立ち止まるコマ数
+
+  let x = -HALF, dir = 1, mode = 'idle', t = 0;
+
+  const legUp = (i, up) => legs[i].setAttribute('height', up ? 1 : 2);
+  const armUp = (el, up) => el.setAttribute('y', up ? 1 : 2);
+  const bob = up => body.setAttribute('transform', up ? 'translate(0,-1)' : '');
+  const rest = () => { legs.forEach((_, i) => legUp(i, false)); armUp(armL, false); armUp(armR, false); bob(false); };
+  const draw = () => { svg.style.transform = `translateX(${x}px) scaleX(${dir})`; };
+
+  function tick() {
+    t++;
+    if (mode === 'walk') {
+      // 歩く：外側2本と内側2本の足を交互に上げ、体も小さく弾ませる
+      const ph = t % 2;
+      armUp(armL, false); armUp(armR, false);
+      legUp(0, ph === 0); legUp(2, ph === 0);
+      legUp(1, ph === 1); legUp(3, ph === 1);
+      bob(ph === 0);
+      x += STEP * dir;
+      if (x <= -HALF || x >= HALF) {
+        x = Math.max(-HALF, Math.min(HALF, x));
+        mode = 'idle'; t = 0; rest();
+      }
+    } else {
+      // 立ち止まり：両腕を交互に上げ下げし、端の足でトントンと足踏み
+      const ph = t % 4;
+      armUp(armL, ph === 1);
+      armUp(armR, ph === 3);
+      legUp(0, ph === 2);
+      legUp(3, ph === 0);
+      bob(false);
+      if (t === Math.floor(IDLE_TICKS / 2)) dir = (x >= HALF) ? -1 : 1; // 途中で振り向く
+      if (t >= IDLE_TICKS) { mode = 'walk'; t = 0; rest(); }
+    }
+    draw();
+  }
+
+  draw();
+  setInterval(tick, TICK);
+})();
 </script>
 </body>
 </html>
