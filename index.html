@@ -7,6 +7,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="覚書">
 <title>覚書</title>
+<link rel="apple-touch-icon" id="appleIcon">
+<link rel="icon" id="favIcon">
 <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -1165,6 +1167,51 @@ function confirmReset(){
 
   draw();
   setInterval(tick, TICK);
+})();
+
+// =============================================================
+// ホーム画面アイコン：墨色の地に和紙のメモ（チェックリスト）と朱印「覚」
+// =============================================================
+(function drawAppIcon() {
+  const S = 512, c = document.createElement('canvas'); c.width = c.height = S;
+  const ctx = c.getContext('2d');
+  // 背景：ヘッダーと同じ墨色
+  const g = ctx.createRadialGradient(S*0.35, S*0.3, 40, S/2, S/2, S*0.75);
+  g.addColorStop(0, '#3e3c3a'); g.addColorStop(1, '#1c1b1a');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, S, S);
+  // 金の細枠
+  ctx.strokeStyle = 'rgba(200,168,96,.55)'; ctx.lineWidth = 4; ctx.strokeRect(30, 30, S-60, S-60);
+  // 和紙のメモ（少し傾ける）
+  ctx.save(); ctx.translate(244, 262); ctx.rotate(-6*Math.PI/180);
+  ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 10;
+  ctx.fillStyle = '#f4f0e6'; ctx.fillRect(-140, -165, 280, 330);
+  ctx.shadowColor = 'transparent';
+  ctx.fillStyle = '#c8a860'; ctx.fillRect(-140, -165, 280, 14); // 上の金帯
+  // 3行のチェックリスト（1行目だけ完了）
+  [-90, -10, 70].forEach((y, i) => {
+    if (i === 0) {
+      ctx.fillStyle = '#2c2c2c'; ctx.beginPath(); ctx.arc(-88, y, 22, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = '#e8c878'; ctx.lineWidth = 7; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.beginPath(); ctx.moveTo(-99, y+1); ctx.lineTo(-91, y+10); ctx.lineTo(-75, y-10); ctx.stroke();
+    } else {
+      ctx.strokeStyle = '#8a8478'; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(-88, y, 20, 0, Math.PI*2); ctx.stroke();
+    }
+    ctx.fillStyle = i === 0 ? '#cfc8b8' : '#6e685e';
+    ctx.fillRect(-48, y-6, i === 2 ? 120 : 170, 12);
+  });
+  ctx.restore();
+  // 朱印「覚」
+  ctx.save(); ctx.translate(352, 362); ctx.rotate(5*Math.PI/180);
+  ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 12; ctx.shadowOffsetY = 4;
+  ctx.fillStyle = '#c4321e'; ctx.fillRect(-72, -72, 144, 144);
+  ctx.shadowColor = 'transparent';
+  ctx.strokeStyle = '#f6e8dc'; ctx.lineWidth = 5; ctx.strokeRect(-60, -60, 120, 120);
+  ctx.fillStyle = '#fbf1e8'; ctx.font = 'bold 92px "Hiragino Mincho ProN","Yu Mincho","YuMincho",serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('覚', 0, 6);
+  ctx.restore();
+  const url = c.toDataURL('image/png');
+  document.getElementById('appleIcon').href = url;
+  document.getElementById('favIcon').href = url;
 })();
 </script>
 </body>
