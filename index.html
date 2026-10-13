@@ -9,43 +9,39 @@
 <title>覚書</title>
 <link rel="apple-touch-icon" id="appleIcon">
 <link rel="icon" id="favIcon">
-<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;overflow:hidden;background:#c84800;}
 body{font-family:'Hiragino Mincho ProN','Yu Mincho','ヒラギノ明朝 ProN','serif';overscroll-behavior:none;}
 
 /* ═══════════════════════════════
-   OPENING (DQ風そのまま)
+   OPENING（近畿発運賃表と同じ形：タップすると音が鳴って、覚書に切りかわる）
 ═══════════════════════════════ */
-#opening{
-  position:fixed;inset:0;background:#c84800;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:env(safe-area-inset-top,0px) 24px 40px;
-  text-align:center;z-index:100;transition:opacity .6s;
-}
-.stars{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
-.star{position:absolute;border-radius:50%;background:#ffffff;animation:twinkle var(--d,3s) ease-in-out infinite var(--dl,0s);}
-@keyframes twinkle{0%,100%{opacity:.15;transform:scale(1)}50%{opacity:1;transform:scale(1.5)}}
-.op-logo-wrap{position:relative;margin-bottom:8px;opacity:0;animation:fadeUp .4s .1s forwards;}
-.op-logo{font-family:'DotGothic16',monospace;font-size:20px;color:#ffffff;letter-spacing:3px;text-shadow:0 0 20px #ff9900aa,0 2px 0 #7a3000;}
-.op-logo-line{height:2px;background:#ffffff88;margin-top:6px;}
-.op-sub{font-family:'DotGothic16',monospace;font-size:10px;color:#ffe0b0;letter-spacing:2px;margin-bottom:28px;opacity:0;animation:fadeUp .4s .22s forwards;}
-.op-hero{margin-bottom:24px;opacity:0;animation:fadeUp .4s .36s forwards;}
-.sprite{display:grid;gap:0;image-rendering:pixelated;animation:heroFloat 2.2s ease-in-out infinite .8s;}
-.sprite div{width:10px;height:10px;}
-.px-s{background:#f5c518;}.px-f{background:#e8a060;}.px-h{background:#281420;}
-.px-b{background:#ff6600;}.px-w{background:#d8d8d8;}.px-0{background:transparent;}
-.op-btn-wrap{opacity:0;animation:fadeUp .4s .5s forwards;}
-.op-btn{
-  font-family:'DotGothic16',monospace;
-  background:#a03800;border:2px solid #ffffff;color:#ffffff;
-  font-size:13px;padding:14px 36px;cursor:pointer;letter-spacing:3px;
-  -webkit-appearance:none;border-radius:0;transition:background .15s;
-}
-.op-btn::before{content:'▶ ';animation:arrowBlink .8s step-end infinite;}
-@keyframes arrowBlink{0%,100%{opacity:1}50%{opacity:0}}
-.op-btn:active{background:#803000;transform:scale(.96);}
+#opening{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:calc(16px + env(safe-area-inset-top)) 20px calc(16px + env(safe-area-inset-bottom));background:linear-gradient(#dd6418,#b03c00);color:#fff;cursor:pointer;transition:opacity .5s,visibility .5s;overflow:auto;font-family:-apple-system,"Hiragino Sans","Yu Gothic",sans-serif;}
+#opening.hide{opacity:0;visibility:hidden;}
+.op-in{width:100%;max-width:360px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;}
+.op-sub{margin:0;font-size:.85rem;font-weight:700;background:#fff;color:#b03c00;border-radius:999px;padding:3px 14px;animation:op-drop .5s both;}
+.op-t{margin:0;display:flex;flex-direction:column;line-height:1.15;font-weight:400;font-family:'Hiragino Mincho ProN','Yu Mincho',serif;text-shadow:0 2px 0 rgba(0,0,0,.15);}
+.op-t span{font-size:1.35rem;letter-spacing:.12em;animation:op-drop .6s .1s both;}
+.op-t b{font-size:3.6rem;letter-spacing:.2em;padding-left:.2em;animation:op-drop .6s .25s both;}
+/* キャラクターの台（白いカード）：オレンジの地だとオレンジのキャラクターが見えにくいので白の上に置く */
+.op-chars{display:flex;align-items:flex-end;justify-content:center;gap:12px;background:#fff;border-radius:18px;padding:16px 22px 10px;box-shadow:0 6px 0 rgba(0,0,0,.15);animation:op-rise .6s .4s both;}
+.op-c{display:flex;flex-direction:column;align-items:center;gap:6px;font:10px -apple-system,"Segoe UI",sans-serif;letter-spacing:.05em;}
+.op-cc{width:102px;height:69px;shape-rendering:crispEdges;overflow:visible;}
+.op-c.cc span{color:#d97757;}
+.op-gh{--gh-disc:#24292f;--gh-cat:#fff;color:#57606a;}
+.op-gh svg{width:48px;height:48px;overflow:visible;}   /* オレンジの体（頭から足先まで48px）と高さをそろえる */
+.op-gh.spin .gh-all{animation:gh-spin .7s cubic-bezier(.34,1.4,.64,1);}
+.op-hello{margin:0;font-size:1rem;font-weight:700;animation:op-rise .6s .55s both;}
+.op-tip{margin:0;font-size:.85rem;line-height:1.5;min-height:3em;background:rgba(0,0,0,.14);border-radius:10px;padding:8px 12px;animation:op-rise .6s .65s both;}
+.op-bar{width:72%;height:6px;background:rgba(255,255,255,.3);border-radius:3px;overflow:hidden;}
+.op-bar i{display:block;height:100%;width:0;background:#fff;transition:width 1.5s linear;}
+.op-go{font:inherit;font-weight:700;font-size:1.05rem;background:#fff;color:#b03c00;border:0;border-radius:999px;padding:12px 30px;box-shadow:0 4px 0 rgba(0,0,0,.18);animation:op-pulse 1.4s ease-in-out infinite;-webkit-appearance:none;}
+.op-go.busy{animation:none;opacity:.85;}
+@keyframes op-drop{from{transform:translateY(-24px);opacity:0}}
+@keyframes op-rise{from{transform:translateY(20px);opacity:0}}
+@keyframes op-pulse{50%{transform:scale(1.06)}}
+@media (prefers-reduced-motion:reduce){#opening *{animation:none!important}}
 
 /* ═══════════════════════════════
    MAIN APP — おしゃれ・漢字UI
@@ -72,6 +68,7 @@ body{font-family:'Hiragino Mincho ProN','Yu Mincho','ヒラギノ明朝 ProN','s
   letter-spacing:6px;
 }
 .app-header-left{display:flex;align-items:center;gap:8px;}
+.app-header-left .gh-wrap{width:36px;margin-left:-8px;}   /* Claude Code と GitHub の間をつめる */
 
 /* === Claude Code のキャラクター（ヘッダー左上） === */
 .cc-wrap { width: 62px; height: 40px; flex-shrink: 0; display: flex; justify-content: center; }
@@ -399,8 +396,6 @@ body{font-family:'Hiragino Mincho ProN','Yu Mincho','ヒラギノ明朝 ProN','s
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
 #file-in{display:none;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-@keyframes heroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 
 
 
@@ -440,17 +435,42 @@ body{font-family:'Hiragino Mincho ProN','Yu Mincho','ヒラギノ明朝 ProN','s
 </head>
 <body>
 
-<!-- ═══ OPENING (DQ風) ═══ -->
-<div id="opening">
-  <div class="stars" id="stars"></div>
-  <div class="op-logo-wrap">
-    <div class="op-logo">冒険者のリマインダー</div>
-    <div class="op-logo-line"></div>
-  </div>
-  <div class="op-sub">～ たいせつなことを、わすれないために ～</div>
-  <div class="op-hero"><div class="sprite" id="sprite"></div></div>
-  <div class="op-btn-wrap">
-    <button class="op-btn" onclick="startApp()">ぼうけんをはじめる</button>
+<!-- ═══ OPENING：タップすると音が鳴って、覚書に切りかわる ═══ -->
+<div id="opening" role="dialog" aria-label="オープニング">
+  <div class="op-in">
+    <p class="op-sub" id="opdate"></p>
+    <h2 class="op-t"><span>冒険者のリマインダー</span><b>覚書</b></h2>
+    <div class="op-chars">
+      <div class="op-c cc"><svg class="cc-anim op-cc" viewBox="0 -7 34 23" data-skip="60" aria-hidden="true"></svg><span>Claude Code</span></div>
+      <div class="op-c op-gh">
+        <svg viewBox="0 0 16 16" aria-hidden="true">
+          <defs><clipPath id="ghClipOp"><circle cx="8" cy="8" r="8"/></clipPath></defs>
+          <g class="gh-all">
+            <circle class="gh-disc" cx="8" cy="8" r="8"/>
+            <g clip-path="url(#ghClipOp)">
+              <path class="gh-cat" d="M6.75 10.3 C6.45 10.7 6.3 11.2 6.3 11.8 L6.3 15.1 Q6.3 15.6 6.8 15.6 L9.2 15.6 Q9.7 15.6 9.7 15.1 L9.7 11.8 C9.7 11.2 9.55 10.7 9.25 10.3 Z"/>
+              <g class="gh-head">
+                <path class="gh-cat" d="M4.15 4.75 C3.85 3.85 3.95 2.85 4.3 2.1 C4.3 2.1 5.05 1.95 6.35 2.9 C6.9 2.75 7.45 2.68 8 2.68 C8.55 2.68 9.1 2.75 9.65 2.9 C10.95 1.95 11.7 2.1 11.7 2.1 C12.05 2.85 12.15 3.85 11.85 4.75 C12.4 5.3 12.75 6.0 12.75 6.95 C12.75 9.75 10.95 10.45 8 10.55 C5.05 10.45 3.25 9.75 3.25 6.95 C3.25 6.0 3.6 5.3 4.15 4.75 Z"/>
+                <rect class="gh-eyes" x="5.5" y="6.1" width="1" height="1.5" rx="0.5"/>
+                <rect class="gh-eyes" x="9.5" y="6.1" width="1" height="1.5" rx="0.5"/>
+              </g>
+              <g class="gh-tail">
+                <path class="gh-tail-line" d="M6.5 12.35 C5.3 12.55 4.65 12.0 4.25 11.25 C3.95 10.7 3.6 10.35 3.0 10.25"/>
+                <circle class="gh-dot" cx="5.5" cy="12.2" r="0.17"/>
+                <circle class="gh-dot" cx="4.75" cy="11.75" r="0.17"/>
+                <circle class="gh-dot" cx="4.25" cy="11.05" r="0.17"/>
+                <circle class="gh-dot" cx="3.7" cy="10.5" r="0.17"/>
+              </g>
+            </g>
+          </g>
+        </svg>
+        <span>GitHub</span>
+      </div>
+    </div>
+    <p class="op-hello" id="ophello"></p>
+    <p class="op-tip" id="optip"></p>
+    <div class="op-bar"><i id="opbar"></i></div>
+    <button class="op-go" id="opgo" type="button">タップしてはじめる</button>
   </div>
 </div>
 
@@ -702,29 +722,6 @@ body{font-family:'Hiragino Mincho ProN','Yu Mincho','ヒラギノ明朝 ProN','s
 <div class="toast" id="toast"></div>
 
 <script>
-/* ── 星 ── */
-(function(){
-  const s=document.getElementById('stars');
-  for(let i=0;i<65;i++){
-    const d=document.createElement('div'),sz=Math.random()<.25?2:1;
-    d.className='star';
-    d.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--dl:${Math.random()*5}s;`;
-    s.appendChild(d);
-  }
-})();
-
-/* ── スプライト ── */
-const ROWS=[
-  '000ss000ss000','00sssssssss00','0sssfffffff00','0sffsfffffff0',
-  '0sfffhhhhhff0','0sfffhffhfff0','0sfffhhhhhff0','0sbbbffffffff',
-  '0sbbbbbbbbbb0','0swbwwbbwwbw0','00wwww00wwww0','00www000www00','000ww0000ww00',
-].map(r=>r.split(''));
-const PC={s:'px-s',f:'px-f',h:'px-h',b:'px-b',w:'px-w','0':'px-0'};
-const sp=document.getElementById('sprite');
-sp.style.gridTemplateColumns=`repeat(${ROWS[0].length},10px)`;
-sp.style.gridTemplateRows=`repeat(${ROWS.length},10px)`;
-ROWS.forEach(row=>row.forEach(c=>{const d=document.createElement('div');d.className=PC[c]||'px-0';sp.appendChild(d);}));
-
 /* ── Web Audio ── */
 let AC;
 function ac(){
@@ -800,13 +797,6 @@ const SND={
   },
 };
 
-
-function startApp(){
-  SND.open();
-  const op=document.getElementById('opening');
-  op.style.opacity='0';
-  setTimeout(()=>{op.style.display='none';document.getElementById('main-app').classList.add('show');initApp();},600);
-}
 
 /* ── データ ── */
 const DEFAULT_CATS=[
@@ -1149,33 +1139,6 @@ function confirmReset(){
   toast('リセットしました');render();if(currentTab==='cat')renderCatEdit();
 }
 
-(function ccTyping() {
-  const svgs = Array.from(document.querySelectorAll('svg.cc-anim'));
-  if (!svgs.length) return;
-  // 各コマの絵：「色の記号 + x,y,幅,高さ をスペース区切り」を | でつないだもの
-  //   O=体のオレンジ  D=横を向いたときの影  G=ノートパソコン  K=目
-  const FRAMES = ["O4,0,16,2 4,2,2,2 8,2,8,2 18,2,2,2 0,4,24,4 4,8,16,4 4,12,2,4 8,12,2,4 14,12,2,4 18,12,2,4|K6,2,2,2 16,2,2,2","O4,1,16,2 0,3,20,2 0,5,16,1 18,5,2,2 0,6,6,1 9,6,7,1 4,7,19,3 4,10,18,1 4,11,16,2 4,13,2,3 8,13,2,3 14,13,2,3 18,13,2,3|K16,5,2,2 6,6,3,1","O4,1,16,2 0,3,20,2 0,5,16,1 18,5,2,2 0,6,6,1 9,6,7,1 4,7,16,1 4,8,19,3 4,11,18,1 4,12,16,1 4,13,2,3 8,13,2,3 14,13,2,3 18,13,2,3|K16,5,2,2 6,6,3,1","O4,0,16,2 4,2,2,2 8,2,8,2 18,2,6,2 4,4,20,1 0,5,24,1 0,6,23,1 0,7,22,1 0,8,20,1 4,9,16,3 4,12,2,4 8,12,2,4 14,12,2,4 18,12,2,4|G21,-3,2,1 21,-2,4,1 23,-1,5,1 25,0,3,1 21,1,7,1|K6,2,2,2 16,2,2,2","O20,-1,4,1 4,0,20,2 4,2,2,2 8,2,8,2 18,2,6,1 18,3,2,1 4,4,16,1 0,5,20,4 4,9,16,3 4,12,2,4 8,12,2,4 14,12,2,4 18,12,2,4|G26,-7,1,5 21,-2,6,1|K6,2,2,2 16,2,2,2","O4,0,16,3 4,3,2,1 8,3,8,2 18,3,2,2 0,4,6,1 0,5,22,1 0,6,23,1 0,7,22,1 4,8,18,1 4,9,20,3 4,12,2,4 8,12,2,4 14,12,2,4 18,12,2,4|G30,3,2,1 29,4,4,1 28,5,5,1 28,6,4,1 22,7,9,1 22,8,7,1|K6,3,2,2 16,3,2,2","O4,0,16,3 4,3,2,2 8,3,8,2 18,3,2,2 0,5,20,4 4,9,20,3 4,12,2,4 8,12,2,4 14,12,2,4 18,12,6,1 18,13,2,3|G32,10,1,1 31,11,2,1 30,12,2,1 29,13,2,1 28,14,2,1 23,15,6,1|K6,3,2,2 16,3,2,2","O4,0,16,3 0,3,6,2 8,3,8,2 18,3,2,1 18,4,6,1 0,5,24,2 4,7,20,1 4,8,16,4 4,12,2,4 8,12,2,4 14,12,2,4 18,12,2,4|G32,12,2,1 30,13,2,1 28,14,2,1 23,15,6,1|K6,3,2,2 16,3,2,2","O8,-4,4,2 18,-4,4,2 7,-2,5,1 18,-2,5,1 7,-1,16,3 7,2,14,1 7,3,1,2 10,3,8,2 20,3,1,2 7,5,14,7 6,12,1,4 9,12,2,4 15,12,2,4 19,12,2,4|D5,-1,2,13 5,12,1,4|G32,9,1,1 31,10,2,1 30,11,2,1 29,12,2,1 28,13,2,1 23,14,6,1|K8,3,2,2 18,3,2,2","O10,1,12,3 23,3,2,1 10,4,2,3 14,4,6,3 23,4,3,2 24,6,2,1 10,7,12,3 25,7,1,1 10,10,16,2 10,12,2,2 16,12,2,2 20,12,6,2 9,14,3,1 15,14,3,1 19,14,7,1 9,15,2,1 15,15,2,1 19,15,2,1|D6,1,4,11 22,2,1,4 22,6,2,1 22,7,3,1 22,8,4,1 6,12,2,2 5,14,3,1 5,15,2,1|G32,10,1,1 31,11,2,1 30,12,2,1 29,13,2,1 28,14,2,1 23,15,6,1|K12,4,2,3 20,4,2,3","O10,2,12,3 10,5,2,2 14,5,6,2 10,7,12,1 10,8,15,4 10,12,12,1 10,13,2,1 16,13,2,1 20,13,2,1 9,14,3,1 15,14,3,1 19,14,3,1 9,15,2,1 15,15,2,1 19,15,2,1|D6,2,4,11 25,9,1,3 22,12,4,1 6,13,2,1 5,14,3,1 5,15,2,1|G32,9,1,1 31,10,2,1 30,11,2,1 29,12,2,1 28,13,2,1 23,14,6,1|K12,5,2,2 20,5,2,2","O10,2,12,3 10,5,2,2 14,5,6,2 10,7,15,4 10,11,12,2 10,13,2,1 16,13,2,1 20,13,2,1 9,14,3,1 15,14,3,1 19,14,3,1 9,15,2,1 15,15,2,1 19,15,2,1|D6,2,4,11 22,12,4,3 6,13,2,1 5,14,3,1 5,15,2,1|G32,10,1,1 31,11,2,1 30,12,2,1 29,13,2,1 28,14,2,1 23,15,6,1|K12,5,2,2 20,5,2,2","O10,2,12,3 10,5,2,2 14,5,6,2 10,7,12,2 10,9,15,4 10,13,2,1 16,13,2,1 20,13,5,1 9,14,3,1 15,14,3,1 19,14,3,1 9,15,2,1 15,15,2,1 19,15,2,1|D6,2,4,11 22,7,4,2 25,9,1,3 6,13,2,1 5,14,3,1 5,15,2,1|G32,10,1,1 31,11,2,1 30,12,2,1 29,13,2,1 28,14,2,1 23,15,6,1|K12,5,2,2 20,5,2,2","O10,2,12,3 10,5,2,2 14,5,6,2 10,7,15,4 10,11,12,2 10,13,2,1 16,13,2,1 20,13,2,1 9,14,3,1 15,14,3,1 19,14,3,1 9,15,2,1 15,15,2,1 19,15,2,1 22,15,4,1|D6,2,4,11 22,12,4,3 6,13,2,1 5,14,3,1 5,15,2,1|G32,10,1,1 31,11,2,1 30,12,2,1 29,13,2,1 28,14,2,1 26,15,3,1|K12,5,2,2 20,5,2,2","O10,2,12,3 10,5,2,2 14,5,6,2 10,7,12,2 10,9,15,3 10,12,16,1 10,13,2,1 16,13,2,1 20,13,6,1 9,14,3,1 15,14,3,1 19,14,7,1 9,15,2,1 15,15,2,1 19,15,2,1 22,15,4,1|D6,2,4,11 22,7,4,2 25,9,1,3 6,13,2,1 5,14,3,1 5,15,2,1|G32,10,1,1 31,11,2,1 30,12,2,1 29,13,2,1 28,14,2,1 26,15,3,1|K12,5,2,2 20,5,2,2","O9,1,12,3 22,3,2,1 9,4,2,3 13,4,6,3 22,4,3,2 23,6,2,1 9,7,12,2 24,7,1,1 9,9,14,1 9,10,16,2 10,12,2,2 16,12,2,2 19,12,7,1 20,13,6,1 9,14,3,1 15,14,3,1 19,14,7,1 9,15,2,1 15,15,2,1 19,15,2,1|D5,1,4,11 21,2,1,4 21,6,2,1 21,7,3,1 21,8,4,1 6,12,2,2 5,14,3,1 5,15,2,1|G31,6,1,1 30,7,2,1 29,8,2,1 28,9,2,1 27,10,2,1 25,11,3,1|K11,4,2,3 19,4,2,3","O6,0,14,3 6,3,2,1 10,3,8,2 2,5,5,4 8,5,14,1 8,6,15,1 8,7,16,1 8,8,18,2 6,10,15,1 6,11,14,1 8,12,2,4 14,12,2,4 18,12,2,4|D4,0,2,4 4,4,4,1 7,5,1,4 4,9,4,1 4,10,2,6|G22,5,2,1 23,6,2,1 24,7,3,1 26,8,2,2 21,10,7,1|K8,3,2,2 18,3,2,2","O4,1,16,2 0,3,20,2 0,5,6,2 8,5,8,2 18,5,2,2 4,7,16,1 4,8,19,3 4,11,18,1 4,12,16,1 4,13,2,3 8,13,2,3 14,13,2,3 18,13,2,3|K6,5,2,2 16,5,2,2","O4,1,16,2 0,3,20,2 0,5,6,2 8,5,8,2 18,5,2,2 4,7,16,1 4,8,18,4 4,12,16,1 4,13,2,3 8,13,2,3 14,13,2,3 18,13,2,3|K6,5,2,2 16,5,2,2","O4,0,16,2 4,2,2,2 8,2,8,2 18,2,2,2 4,4,16,1 0,5,24,4 4,9,16,3 4,12,2,4 8,12,2,4 14,12,2,4 18,12,2,4|K6,2,2,2 16,2,2,2"];
-  // [コマ番号, 長さ（1/30秒単位）] の順番（動画と同じ。最初の60＝2秒は正面で止まっている）
-  const SEQ = [[0,60],[1,3],[2,2],[1,3],[2,5],[3,2],[4,5],[5,3],[6,2],[7,2],[8,3],[9,3],[10,2],[11,3],[12,2],[10,3],[11,2],[12,3],[10,2],[11,3],[12,3],[10,2],[11,3],[12,2],[10,3],[11,2],[12,3],[10,2],[13,2],[14,3],[15,2],[16,3],[17,5],[18,3],[19,2],[0,29]];
-  const COLOR = { O: '#d97757', D: '#b46348', G: '#8a8a8a', K: '#1a1612' };
-  const svgOf = FRAMES.map(f => f.split('|').map(part => {
-    const fill = COLOR[part[0]];
-    return part.slice(1).split(' ').map(r => {
-      const [x, y, w, h] = r.split(',');
-      return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + fill + '"/>';
-    }).join('');
-  }).join(''));
-  const total = SEQ.reduce((s, q) => s + q[1], 0);
-  let shown = -1;
-  function draw(now) {
-    let t = Math.floor(now / (1000 / 30)) % total, id = SEQ[0][0];
-    for (const [f, len] of SEQ) { if (t < len) { id = f; break; } t -= len; }
-    if (id !== shown) { svgs.forEach(s => { s.innerHTML = svgOf[id]; }); shown = id; }
-    requestAnimationFrame(draw);
-  }
-  requestAnimationFrame(draw);
-})();
-
 // GitHub のマーク：タップするとくるっと1回転（そのあと GitHub のページが別のタブで開く）
 (function ghMascot() {
   const gh = document.querySelector('.gh-mascot');
@@ -1240,6 +1203,94 @@ function confirmReset(){
   const url = c.toDataURL('image/png');
   document.getElementById('appleIcon').href = url;
   document.getElementById('favIcon').href = url;
+})();
+// =============================================================
+// オープニングの Claude Code のキャラクター：ノートパソコンを打つ動き（近畿発運賃表と同じ）
+// =============================================================
+(function ccTyping() {
+  const svgs = Array.from(document.querySelectorAll('svg.cc-anim'));
+  if (!svgs.length) return;
+  // 各コマの絵：「色の記号 + x,y,幅,高さ をスペース区切り」を | でつないだもの
+  //   O=体のオレンジ  D=横を向いたときの影  G=ノートパソコン  K=目
+  const FRAMES = ["O4,0,16,2 4,2,2,2 8,2,8,2 18,2,2,2 0,4,24,4 4,8,16,4 4,12,2,4 8,12,2,4 14,12,2,4 18,12,2,4|K6,2,2,2 16,2,2,2","O4,1,16,2 0,3,20,2 0,5,16,1 18,5,2,2 0,6,6,1 9,6,7,1 4,7,19,3 4,10,18,1 4,11,16,2 4,13,2,3 8,13,2,3 14,13,2,3 18,13,2,3|K16,5,2,2 6,6,3,1","O4,1,16,2 0,3,20,2 0,5,16,1 18,5,2,2 0,6,6,1 9,6,7,1 4,7,16,1 4,8,19,3 4,11,18,1 4,12,16,1 4,13,2,3 8,13,2,3 14,13,2,3 18,13,2,3|K16,5,2,2 6,6,3,1","O4,0,16,2 4,2,2,2 8,2,8,2 18,2,6,2 4,4,20,1 0,5,24,1 0,6,23,1 0,7,22,1 0,8,20,1 4,9,16,3 4,12,2,4 8,12,2,4 14,12,2,4 18,12,2,4|G21,-3,2,1 21,-2,4,1 23,-1,5,1 25,0,3,1 21,1,7,1|K6,2,2,2 16,2,2,2","O20,-1,4,1 4,0,20,2 4,2,2,2 8,2,8,2 18,2,6,1 18,3,2,1 4,4,16,1 0,5,20,4 4,9,16,3 4,12,2,4 8,12,2,4 14,12,2,4 18,12,2,4|G26,-7,1,5 21,-2,6,1|K6,2,2,2 16,2,2,2","O4,0,16,3 4,3,2,1 8,3,8,2 18,3,2,2 0,4,6,1 0,5,22,1 0,6,23,1 0,7,22,1 4,8,18,1 4,9,20,3 4,12,2,4 8,12,2,4 14,12,2,4 18,12,2,4|G30,3,2,1 29,4,4,1 28,5,5,1 28,6,4,1 22,7,9,1 22,8,7,1|K6,3,2,2 16,3,2,2","O4,0,16,3 4,3,2,2 8,3,8,2 18,3,2,2 0,5,20,4 4,9,20,3 4,12,2,4 8,12,2,4 14,12,2,4 18,12,6,1 18,13,2,3|G32,10,1,1 31,11,2,1 30,12,2,1 29,13,2,1 28,14,2,1 23,15,6,1|K6,3,2,2 16,3,2,2","O4,0,16,3 0,3,6,2 8,3,8,2 18,3,2,1 18,4,6,1 0,5,24,2 4,7,20,1 4,8,16,4 4,12,2,4 8,12,2,4 14,12,2,4 18,12,2,4|G32,12,2,1 30,13,2,1 28,14,2,1 23,15,6,1|K6,3,2,2 16,3,2,2","O8,-4,4,2 18,-4,4,2 7,-2,5,1 18,-2,5,1 7,-1,16,3 7,2,14,1 7,3,1,2 10,3,8,2 20,3,1,2 7,5,14,7 6,12,1,4 9,12,2,4 15,12,2,4 19,12,2,4|D5,-1,2,13 5,12,1,4|G32,9,1,1 31,10,2,1 30,11,2,1 29,12,2,1 28,13,2,1 23,14,6,1|K8,3,2,2 18,3,2,2","O10,1,12,3 23,3,2,1 10,4,2,3 14,4,6,3 23,4,3,2 24,6,2,1 10,7,12,3 25,7,1,1 10,10,16,2 10,12,2,2 16,12,2,2 20,12,6,2 9,14,3,1 15,14,3,1 19,14,7,1 9,15,2,1 15,15,2,1 19,15,2,1|D6,1,4,11 22,2,1,4 22,6,2,1 22,7,3,1 22,8,4,1 6,12,2,2 5,14,3,1 5,15,2,1|G32,10,1,1 31,11,2,1 30,12,2,1 29,13,2,1 28,14,2,1 23,15,6,1|K12,4,2,3 20,4,2,3","O10,2,12,3 10,5,2,2 14,5,6,2 10,7,12,1 10,8,15,4 10,12,12,1 10,13,2,1 16,13,2,1 20,13,2,1 9,14,3,1 15,14,3,1 19,14,3,1 9,15,2,1 15,15,2,1 19,15,2,1|D6,2,4,11 25,9,1,3 22,12,4,1 6,13,2,1 5,14,3,1 5,15,2,1|G32,9,1,1 31,10,2,1 30,11,2,1 29,12,2,1 28,13,2,1 23,14,6,1|K12,5,2,2 20,5,2,2","O10,2,12,3 10,5,2,2 14,5,6,2 10,7,15,4 10,11,12,2 10,13,2,1 16,13,2,1 20,13,2,1 9,14,3,1 15,14,3,1 19,14,3,1 9,15,2,1 15,15,2,1 19,15,2,1|D6,2,4,11 22,12,4,3 6,13,2,1 5,14,3,1 5,15,2,1|G32,10,1,1 31,11,2,1 30,12,2,1 29,13,2,1 28,14,2,1 23,15,6,1|K12,5,2,2 20,5,2,2","O10,2,12,3 10,5,2,2 14,5,6,2 10,7,12,2 10,9,15,4 10,13,2,1 16,13,2,1 20,13,5,1 9,14,3,1 15,14,3,1 19,14,3,1 9,15,2,1 15,15,2,1 19,15,2,1|D6,2,4,11 22,7,4,2 25,9,1,3 6,13,2,1 5,14,3,1 5,15,2,1|G32,10,1,1 31,11,2,1 30,12,2,1 29,13,2,1 28,14,2,1 23,15,6,1|K12,5,2,2 20,5,2,2","O10,2,12,3 10,5,2,2 14,5,6,2 10,7,15,4 10,11,12,2 10,13,2,1 16,13,2,1 20,13,2,1 9,14,3,1 15,14,3,1 19,14,3,1 9,15,2,1 15,15,2,1 19,15,2,1 22,15,4,1|D6,2,4,11 22,12,4,3 6,13,2,1 5,14,3,1 5,15,2,1|G32,10,1,1 31,11,2,1 30,12,2,1 29,13,2,1 28,14,2,1 26,15,3,1|K12,5,2,2 20,5,2,2","O10,2,12,3 10,5,2,2 14,5,6,2 10,7,12,2 10,9,15,3 10,12,16,1 10,13,2,1 16,13,2,1 20,13,6,1 9,14,3,1 15,14,3,1 19,14,7,1 9,15,2,1 15,15,2,1 19,15,2,1 22,15,4,1|D6,2,4,11 22,7,4,2 25,9,1,3 6,13,2,1 5,14,3,1 5,15,2,1|G32,10,1,1 31,11,2,1 30,12,2,1 29,13,2,1 28,14,2,1 26,15,3,1|K12,5,2,2 20,5,2,2","O9,1,12,3 22,3,2,1 9,4,2,3 13,4,6,3 22,4,3,2 23,6,2,1 9,7,12,2 24,7,1,1 9,9,14,1 9,10,16,2 10,12,2,2 16,12,2,2 19,12,7,1 20,13,6,1 9,14,3,1 15,14,3,1 19,14,7,1 9,15,2,1 15,15,2,1 19,15,2,1|D5,1,4,11 21,2,1,4 21,6,2,1 21,7,3,1 21,8,4,1 6,12,2,2 5,14,3,1 5,15,2,1|G31,6,1,1 30,7,2,1 29,8,2,1 28,9,2,1 27,10,2,1 25,11,3,1|K11,4,2,3 19,4,2,3","O6,0,14,3 6,3,2,1 10,3,8,2 2,5,5,4 8,5,14,1 8,6,15,1 8,7,16,1 8,8,18,2 6,10,15,1 6,11,14,1 8,12,2,4 14,12,2,4 18,12,2,4|D4,0,2,4 4,4,4,1 7,5,1,4 4,9,4,1 4,10,2,6|G22,5,2,1 23,6,2,1 24,7,3,1 26,8,2,2 21,10,7,1|K8,3,2,2 18,3,2,2","O4,1,16,2 0,3,20,2 0,5,6,2 8,5,8,2 18,5,2,2 4,7,16,1 4,8,19,3 4,11,18,1 4,12,16,1 4,13,2,3 8,13,2,3 14,13,2,3 18,13,2,3|K6,5,2,2 16,5,2,2","O4,1,16,2 0,3,20,2 0,5,6,2 8,5,8,2 18,5,2,2 4,7,16,1 4,8,18,4 4,12,16,1 4,13,2,3 8,13,2,3 14,13,2,3 18,13,2,3|K6,5,2,2 16,5,2,2","O4,0,16,2 4,2,2,2 8,2,8,2 18,2,2,2 4,4,16,1 0,5,24,4 4,9,16,3 4,12,2,4 8,12,2,4 14,12,2,4 18,12,2,4|K6,2,2,2 16,2,2,2"];
+  // [コマ番号, 長さ（1/30秒単位）] の順番（動画と同じ。最初の60＝2秒は正面で止まっている）
+  const SEQ = [[0,60],[1,3],[2,2],[1,3],[2,5],[3,2],[4,5],[5,3],[6,2],[7,2],[8,3],[9,3],[10,2],[11,3],[12,2],[10,3],[11,2],[12,3],[10,2],[11,3],[12,3],[10,2],[11,3],[12,2],[10,3],[11,2],[12,3],[10,2],[13,2],[14,3],[15,2],[16,3],[17,5],[18,3],[19,2],[0,29]];
+  const COLOR = { O: '#d97757', D: '#b46348', G: '#8a8a8a', K: '#1a1612' };
+  const svgOf = FRAMES.map(f => f.split('|').map(part => {
+    const fill = COLOR[part[0]];
+    return part.slice(1).split(' ').map(r => {
+      const [x, y, w, h] = r.split(',');
+      return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + fill + '"/>';
+    }).join('');
+  }).join(''));
+  const total = SEQ.reduce((s, q) => s + q[1], 0);
+  // data-skip="60" を付けた絵（オープニング）は、最初の止まっている2秒を飛ばしてすぐ打ちはじめる
+  const shown = new Map();
+  function frameAt(t) {
+    t %= total;
+    for (const [f, len] of SEQ) { if (t < len) return f; t -= len; }
+    return SEQ[0][0];
+  }
+  function draw(now) {
+    if (!svgs.some(s => s.isConnected)) return;   // オープニングが閉じたら止める
+    const base = Math.floor(now / (1000 / 30));
+    svgs.forEach(s => {
+      const id = frameAt(base + (+s.dataset.skip || 0));
+      if (shown.get(s) !== id) { s.innerHTML = svgOf[id]; shown.set(s, id); }
+    });
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+
+// =============================================================
+// オープニング：タップすると、カタカタ（キーボード）→ ピロリン の音が鳴り、
+//   白いバーが伸びきったら覚書に切りかわる。準備中にもう一度タップするとすぐ閉じる
+// =============================================================
+(function opening() {
+  const op = document.getElementById('opening');
+  if (!op) return;
+  const d = new Date();
+  const days = ['日','月','火','水','木','金','土'];
+  document.getElementById('opdate').textContent = `${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()}（${days[d.getDay()]}）`;
+  const h = d.getHours();
+  document.getElementById('ophello').textContent = h < 5 ? '夜おそくまで、おつかれさまです' : h < 11 ? 'おはようございます' : h < 17 ? 'こんにちは' : 'おつかれさまです';
+  // ひとこと：期限超過・今日が期限・未済の覚書があればそれを、なければ使い方のヒントを出す
+  const today = ymd(d);
+  const open = items.filter(r => !r.done);
+  const over = open.filter(r => r.date && r.date < today).length;
+  const due = open.filter(r => r.date === today).length;
+  const TIPS = [
+    '用件を入れて「登録」で覚書に追加できます',
+    '分類の札をタップすると、あとから分類を変えられます',
+    '「重要」に入れた覚書は、重要タブにまとまります',
+    '「保存」タブから、ファイルにバックアップできます',
+    '日時を設定すると、期限が過ぎたとき赤く表示されます'];
+  document.getElementById('optip').textContent =
+    over ? `期限を過ぎた覚書が ${over} 件あります` :
+    due  ? `今日が期限の覚書が ${due} 件あります` :
+    open.length ? `まだ済んでいない覚書が ${open.length} 件あります` :
+    'ひとこと：' + TIPS[Math.floor(Math.random() * TIPS.length)];
+
+  let started = false;
+  function close() {
+    op.classList.add('hide');
+    document.getElementById('main-app').classList.add('show');
+    initApp();
+    setTimeout(() => op.remove(), 600);
+  }
+  op.addEventListener('click', () => {
+    if (started) { close(); return; }
+    started = true;
+    SND.tab();
+    document.getElementById('opgo').textContent = '準備中…';
+    document.getElementById('opgo').classList.add('busy');
+    op.querySelector('.op-gh').classList.add('spin');                       // GitHub のマークがくるっと回る
+    for (let i = 0; i < 14; i++) tone(1700 + Math.random() * 500, .025, 'square', .035, .15 + i * .095 + Math.random() * .03);   // カタカタ…
+    requestAnimationFrame(() => { document.getElementById('opbar').style.width = '100%'; });
+    tone(1568, .1, 'square', .08, 1.65); tone(2093, .2, 'square', .08, 1.75);   // ピロリン
+    setTimeout(close, 2300);
+  });
 })();
 </script>
 </body>
