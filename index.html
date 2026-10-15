@@ -906,6 +906,14 @@ function loadData(){
   catch(e){cats=JSON.parse(JSON.stringify(DEFAULT_CATS));}
   try{items=JSON.parse(localStorage.getItem('dq_rem_v5')||'[]');}catch(e){items=[];}
   try{records=JSON.parse(localStorage.getItem('dq_juyo_v5')||'[]');}catch(e){records=[];}
+  ensureJuyo();
+}
+// 「重要」の分類は重要タブのもとなので、なければ足す（古いデータ・消してしまった・復元したデータなど）
+function ensureJuyo(){
+  if(cats.some(c=>c.id==='juyo'))return false;
+  cats.push(JSON.parse(JSON.stringify(DEFAULT_CATS.find(c=>c.id==='juyo'))));
+  try{localStorage.setItem('dq_cats_v5',JSON.stringify(cats));}catch(e){}
+  return true;
 }
 function saveData(){
   localStorage.setItem('dq_cats_v5',JSON.stringify(cats));
@@ -1165,6 +1173,7 @@ function confirmDelCat(){
   items.forEach(r=>{if(r.cat===delId)r.cat=fallback;});
   cats.splice(pendingDelCatIdx,1);
   if(cats.length===0)cats=JSON.parse(JSON.stringify(DEFAULT_CATS));
+  ensureJuyo();
   saveData();pendingDelCatIdx=null;
   document.getElementById('delcat-sheet').classList.remove('show');
   toast('削除しました');renderCatEdit();render();
@@ -1220,6 +1229,7 @@ function importData(text){
     if(!d.items||!Array.isArray(d.items))throw new Error();
     items=d.items;
     if(d.cats&&Array.isArray(d.cats)&&d.cats.length>0)cats=d.cats;
+    ensureJuyo();
     if(d.records&&Array.isArray(d.records))records=d.records;
     saveData();SND.backup();toast('復元しました');
     render();if(currentTab==='cat')renderCatEdit();
