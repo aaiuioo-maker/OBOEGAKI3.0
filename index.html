@@ -291,8 +291,16 @@ body{font-family:'Hiragino Mincho ProN','Yu Mincho','ヒラギノ明朝 ProN','s
   line-height:1;
 }
 .memo-del-top:active{color:#c44;}
-.memo-date-row{padding-left:30px;margin-top:4px;}
+.memo-date-row{padding-left:30px;margin-top:4px;display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;}
 .memo-date{font-size:15px;color:#222;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* iPhone のカレンダーに追加するボタン */
+.cal-add{
+  background:#fff;border:1px solid #888;color:#222;border-radius:3px;
+  font-family:'Hiragino Mincho ProN','Yu Mincho','serif';
+  font-size:12px;padding:4px 8px;letter-spacing:1px;white-space:nowrap;
+  flex-shrink:0;margin-left:auto;cursor:pointer;-webkit-appearance:none;
+}
+.cal-add:active{background:#ddd;transform:scale(.97);}
 .memo-date.over{color:#c44;}
 
 
@@ -438,7 +446,7 @@ body{font-family:'Hiragino Mincho ProN','Yu Mincho','ヒラギノ明朝 ProN','s
   transition:color .12s;-webkit-appearance:none;line-height:1;
 }
 .rec-del:active{color:#c44;}
-.rec-meta{font-size:13px;color:#888;margin-top:5px;padding-left:2px;letter-spacing:.3px;}
+.rec-meta{font-size:13px;color:#888;margin-top:5px;padding-left:2px;letter-spacing:.3px;display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;}
 .rec-cat-badge{
   display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;
   letter-spacing:1px;margin-right:6px;
@@ -1094,6 +1102,47 @@ function fmtD(d,t){
   return s;
 }
 
+/* ══ iPhone のカレンダーに追加 ══
+   予定のファイル（.ics）を作って開く。iPhone が「カレンダーに追加」を出してくれる。
+   時刻があれば1時間の予定（30分前に通知）、時刻がなければ終日の予定（その日の朝9時に通知）。
+   時刻にタイムゾーンを付けないので、iPhone の時間（日本時間）のまま入る */
+function calBtn(r){return r.done?'':`<button class="cal-add" ontouchstart="" onclick="addToCal(${r.id})">📅 カレンダー</button>`;}
+function icsText(s){return String(s).replace(/\\/g,'\\\\').replace(/[,;]/g,m=>'\\'+m).replace(/\r?\n/g,'\\n');}
+function icsFold(line){ // 1行75バイトまで（日本語は1文字3バイト）。続きは空白で始める
+  const enc=new TextEncoder();const out=[];let cur='',n=0;
+  for(const ch of line){const b=enc.encode(ch).length;if(n+b>(out.length?74:75)){out.push(cur);cur='';n=0;}cur+=ch;n+=b;}
+  out.push(cur);return out.join('\r\n ');
+}
+function addToCal(id){
+  const r=items.find(x=>x.id===id);if(!r||!r.date)return;
+  const p=n=>String(n).padStart(2,'0');
+  const [y,m,d]=r.date.split('-').map(Number);
+  const now=new Date();
+  const stamp=`${now.getUTCFullYear()}${p(now.getUTCMonth()+1)}${p(now.getUTCDate())}T${p(now.getUTCHours())}${p(now.getUTCMinutes())}${p(now.getUTCSeconds())}Z`;
+  let when,alarm;
+  if(r.time){
+    const [hh,mm]=r.time.split(':').map(Number);
+    const s=new Date(y,m-1,d,hh,mm),e=new Date(s.getTime()+60*60*1000);
+    const f=t=>`${t.getFullYear()}${p(t.getMonth()+1)}${p(t.getDate())}T${p(t.getHours())}${p(t.getMinutes())}00`;
+    when=[`DTSTART:${f(s)}`,`DTEND:${f(e)}`];alarm='-PT30M';
+  }else{
+    const e=new Date(y,m-1,d+1);
+    when=[`DTSTART;VALUE=DATE:${y}${p(m)}${p(d)}`,`DTEND;VALUE=DATE:${e.getFullYear()}${p(e.getMonth()+1)}${p(e.getDate())}`];alarm='PT9H';
+  }
+  const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//oboegaki//JP','CALSCALE:GREGORIAN','METHOD:PUBLISH',
+    'BEGIN:VEVENT',`UID:oboegaki-${r.id}`,`DTSTAMP:${stamp}`,...when,
+    `SUMMARY:${icsText(r.text)}`,`DESCRIPTION:${icsText('覚書（'+getCat(r.cat).label+'）より')}`,
+    'BEGIN:VALARM','ACTION:DISPLAY',`DESCRIPTION:${icsText(r.text)}`,`TRIGGER:${alarm}`,'END:VALARM',
+    'END:VEVENT','END:VCALENDAR'].map(icsFold).join('\r\n')+'\r\n';
+  SND.save();
+  const blob=new Blob([ics],{type:'text/calendar;charset=utf-8'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download=`yotei_${r.date}.ics`;
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);document.body.removeChild(a);},1000);
+  toast('出てきた画面で「カレンダーに追加」を押してください');
+}
+
 function render(){
   if(!selCat||!cats.find(c=>c.id===selCat))selCat=cats[0]?.id||'other';
   buildFilters();
@@ -1120,7 +1169,7 @@ function render(){
           <div class="memo-text">${esc(r.text)}</div>
           <button class="memo-del-top" ontouchstart="" onclick="askDel(${r.id})">×</button>
         </div>
-        ${r.date?`<div class="memo-date-row"><div class="memo-date${over?' over':''}">${over?'期限超過 ':''}${fmtD(r.date,r.time)}</div></div>`:''}
+        ${r.date?`<div class="memo-date-row"><div class="memo-date${over?' over':''}">${over?'期限超過 ':''}${fmtD(r.date,r.time)}</div>${calBtn(r)}</div>`:''}
 
       </div>`;
     }).join('');
@@ -1151,7 +1200,7 @@ function renderJuyo(){
         <div class="rec-text">${esc(r.text)}</div>
         <button class="rec-del" ontouchstart="" onclick="askDel(${r.id})">×</button>
       </div>
-      ${r.date?`<div class="rec-meta">${over?'<span style="color:#c44;">期限超過 </span>':''}${fmtD(r.date,r.time)}</div>`:''}
+      ${r.date?`<div class="rec-meta"><span>${over?'<span style="color:#c44;">期限超過 </span>':''}${fmtD(r.date,r.time)}</span>${calBtn(r)}</div>`:''}
     </div>`;
   }).join('');
 }
@@ -2707,7 +2756,8 @@ window.CC_EXTRA = [...BLOCKS, ...MOBS, ...MC2, ...MC3, ...MC4, ...MC5];
     '分類の札をタップすると、あとから分類を変えられます',
     '「重要」に入れた覚書は、重要タブにまとまります',
     '「保存」タブから、ファイルにバックアップできます',
-    '日時を設定すると、期限が過ぎたとき赤く表示されます'];
+    '日時を設定すると、期限が過ぎたとき赤く表示されます',
+    '日時のある覚書は「📅 カレンダー」で iPhone のカレンダーに入れられます'];
   document.getElementById('optip').textContent =
     over ? `期限を過ぎた覚書が ${over} 件あります` :
     due  ? `今日が期限の覚書が ${due} 件あります` :
